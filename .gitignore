@@ -1,3 +1,7 @@
+#data file directory
+/history
+/info
+
 # Logs
 logs
 *.log
