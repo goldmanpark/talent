@@ -1,0 +1,10 @@
+{
+    "tickerName":[
+        { "name" : "^VIX"},
+        { "name" : "^VXN"},
+        { "name" : "DX-Y.NYB"},
+        { "name" : "^IXIC"},
+        { "name" : "^DJI"},
+        { "name" : "^SPX"}
+    ]
+}
