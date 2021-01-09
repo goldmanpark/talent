@@ -2,7 +2,7 @@ import yfinance as yf
 import json
 import os
 
-tickers = ["^VIX", "^VXN", "DX-Y.NYB"]
+tickers = ["^VIX", "^VXN", "DX-Y.NYB", "^IXIC", "^DJI", "^SPX"]
 
 for x in tickers:
     ticker = yf.Ticker(x)    
