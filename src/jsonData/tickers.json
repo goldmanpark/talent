@@ -1,5 +1,5 @@
 {
-    "tickerName":[
+    "tickerNames":[
         { "name" : "^VIX"},
         { "name" : "^VXN"},
         { "name" : "DX-Y.NYB"},
