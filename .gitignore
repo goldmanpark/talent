@@ -1,7 +1,7 @@
 #data file directory
 /src/jsonData/history
 /src/jsonData/info
-
+/build
 # Logs
 logs
 *.log
