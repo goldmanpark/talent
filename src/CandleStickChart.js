@@ -111,8 +111,7 @@ export class CandleStickChart extends React.Component {
       }],
       options: {
         chart: {
-          type: 'candlestick',
-          height: 350
+          type: 'candlestick',         
         },
         title: {
           text: 'CandleStick Chart',
@@ -132,14 +131,11 @@ export class CandleStickChart extends React.Component {
 
   render = () => {
     return (
-      <tr>
-        <td>
-          <Chart options={this.state.options} 
-                 series={this.state.series} 
-                 type="candlestick" 
-                 height={350} />
-        </td>            
-      </tr>
+      <div className="square-FlexItem">
+        <Chart options={this.state.options} 
+               series={this.state.series} 
+               type="candlestick" />
+      </div>
     )
   }
 }

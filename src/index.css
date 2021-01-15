@@ -11,3 +11,16 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.square-FlexGrid {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.square-FlexItem {
+  min-width: 33vw;
+  max-width: 50vw;
+  min-height: 25vh;
+}
