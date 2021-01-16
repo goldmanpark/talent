@@ -3,7 +3,7 @@ import json
 import os
 
 tickers = []
-jsonPath = os.getcwd() + "/src/jsonData"
+jsonPath = os.getcwd() + "/jsonData"
 infoPath = jsonPath + "/info"
 histPath = jsonPath + "/history"
 with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:

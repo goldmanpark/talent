@@ -7,9 +7,15 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "chrome debugger",
+            "name": "chrome client debugger",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}/src"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "chrome server debugger",
+            "program": "${workspaceFolder}/server.js"
         },
         {
             "name": "Python: Current File",

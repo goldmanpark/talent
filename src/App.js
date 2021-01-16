@@ -1,17 +1,27 @@
 import React, { Component } from 'react';
-import tickerJson from './jsonData/tickers.json'
 import { CandleStickChart } from './CandleStickChart';
+import axios from 'axios';
 
 export default class App extends Component{
   constructor(props){
     super(props);
     this.state = {
-      tickers : tickerJson["tickerNames"],
+      tickers : [],
       startDate : new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().substr(0,10),
       endDate : new Date().toISOString().substr(0,10)
     }
     this.updateStartDate = this.updateStartDate.bind(this);
     this.updateEndDate = this.updateEndDate.bind(this);
+  }
+
+  componentDidMount(){
+    try {
+      axios.get('/dashboard').then(res => {
+        this.setState({tickers : res.data.tickerNames});
+      });  
+    } catch (error) {
+      console.log(error);
+    }    
   }
 
   compareDate(date1, date2){
@@ -54,7 +64,10 @@ export default class App extends Component{
   }
 
   createCandlecharts = () => {
-    return this.state.tickers.map(item => <CandleStickChart key={item.name}/>);
+    if(this.state.tickers != null)
+      return this.state.tickers.map(item => <CandleStickChart key={item.name}/>);
+    else
+      console.log("ticker is null");
   }
   
   render(){

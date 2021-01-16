@@ -1,6 +1,6 @@
 #data file directory
-/src/jsonData/history
-/src/jsonData/info
+/jsonData/history
+/jsonData/info
 /build
 # Logs
 logs
