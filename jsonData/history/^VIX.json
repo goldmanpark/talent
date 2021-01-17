@@ -1,0 +1,164 @@
+{
+    "schema": {
+        "fields": [
+            {
+                "name": "Date",
+                "type": "datetime"
+            },
+            {
+                "name": "Open",
+                "type": "number"
+            },
+            {
+                "name": "High",
+                "type": "number"
+            },
+            {
+                "name": "Low",
+                "type": "number"
+            },
+            {
+                "name": "Close",
+                "type": "number"
+            },
+            {
+                "name": "Volume",
+                "type": "integer"
+            },
+            {
+                "name": "Dividends",
+                "type": "integer"
+            },
+            {
+                "name": "Stock Splits",
+                "type": "integer"
+            }
+        ],
+        "primaryKey": [
+            "Date"
+        ],
+        "pandas_version": "0.20.0"
+    },
+    "data": [
+        {
+            "Date": "2019-12-31T00:00:00.000Z",
+            "Open": 14.8400001526,
+            "High": 15.3900003433,
+            "Low": 13.75,
+            "Close": 13.779999733,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        },
+        {
+            "Date": "2020-01-02T00:00:00.000Z",
+            "Open": 13.4600000381,
+            "High": 13.720000267,
+            "Low": 12.4200000763,
+            "Close": 12.470000267,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        },
+        {
+            "Date": "2020-01-03T00:00:00.000Z",
+            "Open": 15.0100002289,
+            "High": 16.2000007629,
+            "Low": 13.1300001144,
+            "Close": 14.0200004578,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        },
+        {
+            "Date": "2020-01-06T00:00:00.000Z",
+            "Open": 15.4499998093,
+            "High": 16.3899993896,
+            "Low": 13.5399999619,
+            "Close": 13.8500003815,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        },
+        {
+            "Date": "2020-01-07T00:00:00.000Z",
+            "Open": 13.8400001526,
+            "High": 14.4600000381,
+            "Low": 13.3900003433,
+            "Close": 13.7899999619,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        },
+        {
+            "Date": "2020-01-08T00:00:00.000Z",
+            "Open": 15.1599998474,
+            "High": 15.2399997711,
+            "Low": 12.8299999237,
+            "Close": 13.4499998093,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        },
+        {
+            "Date": "2020-01-09T00:00:00.000Z",
+            "Open": 12.9499998093,
+            "High": 13.2399997711,
+            "Low": 12.529999733,
+            "Close": 12.5399999619,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        },
+        {
+            "Date": "2020-01-10T00:00:00.000Z",
+            "Open": 12.4200000763,
+            "High": 12.8699998856,
+            "Low": 12.0900001526,
+            "Close": 12.5600004196,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        },
+        {
+            "Date": "2020-01-13T00:00:00.000Z",
+            "Open": 12.8400001526,
+            "High": 13.0900001526,
+            "Low": 12.3199996948,
+            "Close": 12.3199996948,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        },
+        {
+            "Date": "2020-01-14T00:00:00.000Z",
+            "Open": 12.720000267,
+            "High": 13.8199996948,
+            "Low": 12.0500001907,
+            "Close": 12.3900003433,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        },
+        {
+            "Date": "2020-01-15T00:00:00.000Z",
+            "Open": 12.7899999619,
+            "High": 12.8299999237,
+            "Low": 11.9499998093,
+            "Close": 12.4200000763,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        },
+        {
+            "Date": "2020-01-16T00:00:00.000Z",
+            "Open": 12.1999998093,
+            "High": 12.4200000763,
+            "Low": 11.779999733,
+            "Close": 12.3199996948,
+            "Volume": 0,
+            "Dividends": 0,
+            "Stock Splits": 0
+        }
+    ]
+}

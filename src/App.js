@@ -5,23 +5,33 @@ import axios from 'axios';
 export default class App extends Component{
   constructor(props){
     super(props);
+    var today = new Date();
+    var ago = new Date(today.getTime() - (7 * 24 * 60 * 60 * 1000));
     this.state = {
       tickers : [],
-      startDate : new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().substr(0,10),
-      endDate : new Date().toISOString().substr(0,10)
+      startDate : ago.toISOString().substr(0,10),
+      endDate : today.toISOString().substr(0,10)
     }
     this.updateStartDate = this.updateStartDate.bind(this);
     this.updateEndDate = this.updateEndDate.bind(this);
   }
 
   componentDidMount(){
+    this.getJsonData();
+  }
+
+  getJsonData(){
     try {
-      axios.get('/dashboard').then(res => {
-        this.setState({tickers : res.data.tickerNames});
-      });  
+      axios.post('/dashboard', {
+        startDate: this.state.startDate,
+        endDate: this.state.endDate
+      }).then(res => {
+        this.setState({tickers : res.data.sendData});
+        this.createCandlecharts();
+      });
     } catch (error) {
       console.log(error);
-    }    
+    }
   }
 
   compareDate(date1, date2){
@@ -56,16 +66,15 @@ export default class App extends Component{
     event.preventDefault();
     if(this.compareDate(this.state.startDate, this.state.endDate) === -1)
       alert("date error");
-    else{
-      // 서버에 저장된 json정보에 원하는 날자 있나 조회
-      // 서버에 저장된 정보가 없으면 파이썬 모듈로 json 업데이트
-      // 서버는 json 모듈 읽어와서 CandleStickChart 새로 렌더링
-    }
+    else
+      this.getJsonData();
   }
 
   createCandlecharts = () => {
     if(this.state.tickers != null)
-      return this.state.tickers.map(item => <CandleStickChart key={item.name}/>);
+      return this.state.tickers.map(item => 
+        <CandleStickChart key={item.symbol} />
+      );
     else
       console.log("ticker is null");
   }

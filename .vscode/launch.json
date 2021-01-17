@@ -22,7 +22,8 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": ["2020-01-01", "2020-01-17"]
         },
         {
             "type": "pwa-chrome",
