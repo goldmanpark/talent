@@ -17,14 +17,24 @@ export default class App extends Component{
   }
 
   componentDidMount(){
+    try {
+      axios.get('/', {
+
+      }).then(res => {
+
+      });
+    } catch (error) {
+      this.setState({tickers : res.data.tickers});
+    }
     this.getJsonData();
   }
 
-  getJsonData(){
+  getJsonData(tickerSymbol){
     try {
-      axios.post('/dashboard', {
-        startDate: this.state.startDate,
-        endDate: this.state.endDate
+      axios.get('/dashboard', {
+        startDate : this.state.startDate,
+        endDate : this.state.endDate,
+        ticker : tickerSymbol
       }).then(res => {
         this.setState({tickers : res.data.sendData});
         this.createCandlecharts();

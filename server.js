@@ -12,30 +12,31 @@ app.use(cors());
 app.use(express.json());
 app.listen(port, () => console.log("Backend server lives on " + port));
 
-app.post("/dashboard", (req, res) => {
-  var startDate = req.body.startDate;
-  var endDate = req.body.endDate;
-  var sendData = [];
-  tickers["tickerNames"].map(item => {
-    try {
-      fs.readFile('./jsonData/info/' + item.name + '.json', 'utf8', (err1, infoJson) => {
-        if (err1)
+app.get("/", (req, res) => {
+  res.send(tickers);
+});
+
+app.get("/dashboard", (req, res) => {
+  try {
+    var startDate = req.body.startDate;
+    var endDate = req.body.endDate;
+    var symbol = req.body.ticker;
+    fs.readFile('./jsonData/info/' + symbol + '.json', 'utf8', (err1, infoJson) => {
+      if (err1)
+        throws;
+      fs.readFile('./jsonData/history/' + symbol + '.json', 'utf8', (err2, histJson) => {
+        if (err2)
           throws;
-        fs.readFile('./jsonData/history/' + item.name + '.json', 'utf8', (err2, histJson) => {
-          if (err2)
-            throws;
-          sendData.push({
-            'symbol': item.name,
-            'shortName': JSON.parse(infoJson).shortName,
-            'data': jsonHistoryTransfer(JSON.parse(histJson), startDate, endDate)
-          });
+        res.send({
+          'symbol': symbol,
+          'shortName': JSON.parse(infoJson).shortName,
+          'data': jsonHistoryTransfer(JSON.parse(histJson), startDate, endDate)
         });
       });
-    } catch (error) {
-      console.log(error);
-    }
-  });
-  res.send(sendData); 
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 function jsonHistoryTransfer(histJson, startDate, endDate) {
