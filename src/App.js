@@ -8,7 +8,8 @@ export default class App extends Component{
     var today = new Date();
     var ago = new Date(today.getTime() - (7 * 24 * 60 * 60 * 1000));
     this.state = {
-      tickers : [],
+      tickers : [], // list of tickers
+      details : [], // list of security details
       startDate : ago.toISOString().substr(0,10),
       endDate : today.toISOString().substr(0,10)
     }
@@ -17,31 +18,24 @@ export default class App extends Component{
   }
 
   componentDidMount(){
-    try {
-      axios.get('/', {
-
-      }).then(res => {
-
-      });
-    } catch (error) {
-      this.setState({tickers : res.data.tickers});
-    }
-    this.getJsonData();
+    axios.get('/dashboard').then(res => {
+      this.setState({tickers : res.data.tickerNames});
+    }).catch(error =>{
+      console.log(error);
+    });
   }
 
-  getJsonData(tickerSymbol){
-    try {
-      axios.get('/dashboard', {
+  async getJsonData(_ticker){
+    await axios.post('/dashboard/detail', {
         startDate : this.state.startDate,
         endDate : this.state.endDate,
-        ticker : tickerSymbol
-      }).then(res => {
-        this.setState({tickers : res.data.sendData});
-        this.createCandlecharts();
-      });
-    } catch (error) {
+        ticker : _ticker
+    }).then(res => {
+      console.log(res.data);
+      this.state.details.push(res.data);        
+    }).catch(error => {
       console.log(error);
-    }
+    });
   }
 
   compareDate(date1, date2){
@@ -76,13 +70,15 @@ export default class App extends Component{
     event.preventDefault();
     if(this.compareDate(this.state.startDate, this.state.endDate) === -1)
       alert("date error");
+    else if(this.state.tickers != null)
+      this.state.tickers.forEach(x => this.getJsonData(x.name));
     else
-      this.getJsonData();
+      console.log("no tickers!");
   }
 
   createCandlecharts = () => {
     if(this.state.tickers != null)
-      return this.state.tickers.map(item => 
+      return this.state.details.map(item => 
         <CandleStickChart key={item.symbol} />
       );
     else
