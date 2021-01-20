@@ -15,6 +15,7 @@ export default class App extends Component{
     }
     this.updateStartDate = this.updateStartDate.bind(this);
     this.updateEndDate = this.updateEndDate.bind(this);
+    this.submitDateRange = this.submitDateRange.bind(this);
   }
 
   componentDidMount(){
@@ -32,7 +33,7 @@ export default class App extends Component{
         ticker : _ticker
     }).then(res => {
       console.log(res.data);
-      this.state.details.push(res.data);        
+      return res.data;
     }).catch(error => {
       console.log(error);
     });
@@ -70,19 +71,29 @@ export default class App extends Component{
     event.preventDefault();
     if(this.compareDate(this.state.startDate, this.state.endDate) === -1)
       alert("date error");
-    else if(this.state.tickers != null)
-      this.state.tickers.forEach(x => this.getJsonData(x.name));
+    else if(this.state.tickers != null){
+      // sync수정필요
+      this.setState({ details : this.state.tickers.map(x => this.getJsonData(x.name)) });
+    }      
     else
       console.log("no tickers!");
   }
 
   createCandlecharts = () => {
-    if(this.state.tickers != null)
-      return this.state.details.map(item => 
-        <CandleStickChart key={item.symbol} />
-      );
+    if(this.state.details != null && this.state.details.length > 0)
+      return this.state.details.map(item => {
+        var _series = [item.data];
+        var _options = {
+          chart: { type: 'candlestick' },
+          title: { text: item.shortName,
+                   align: 'left' },
+          xaxis: { type: 'datetime' },
+          yaxis: { tooltip: { enabled: true }}
+        };
+        return (<CandleStickChart key={item.symbol} options={_options} series={_series}/>);
+      });
     else
-      console.log("ticker is null");
+      console.log("ticker detail list is null");
   }
   
   render(){
