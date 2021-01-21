@@ -23,7 +23,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["2020-01-01", "2020-01-17"]
+            "args": ["2019-01-01", "2021-01-21"]
         },
         {
             "type": "pwa-chrome",

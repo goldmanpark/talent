@@ -21,19 +21,22 @@ export default class App extends Component{
   componentDidMount(){
     axios.get('/dashboard').then(res => {
       this.setState({tickers : res.data.tickerNames});
+      this.state.tickers.forEach(x => this.getJsonData(x.name));
     }).catch(error =>{
       console.log(error);
     });
   }
 
   async getJsonData(_ticker){
-    await axios.post('/dashboard/detail', {
+    await axios.get('/dashboard/' + _ticker, {
+      params : {
         startDate : this.state.startDate,
         endDate : this.state.endDate,
         ticker : _ticker
+      }
     }).then(res => {
       console.log(res.data);
-      return res.data;
+      this.setState({details : [...this.state.details, res.data]});
     }).catch(error => {
       console.log(error);
     });
@@ -72,8 +75,8 @@ export default class App extends Component{
     if(this.compareDate(this.state.startDate, this.state.endDate) === -1)
       alert("date error");
     else if(this.state.tickers != null){
-      // sync수정필요
-      this.setState({ details : this.state.tickers.map(x => this.getJsonData(x.name)) });
+      this.setState({details : []});
+      this.state.tickers.forEach(x => this.getJsonData(x.name));
     }      
     else
       console.log("no tickers!");
@@ -82,12 +85,12 @@ export default class App extends Component{
   createCandlecharts = () => {
     if(this.state.details != null && this.state.details.length > 0)
       return this.state.details.map(item => {
-        var _series = [item.data];
+        var _series = [{data : item.data}];
         var _options = {
           chart: { type: 'candlestick' },
-          title: { text: item.shortName,
+          title: { text: item.shortName + ' (' + item.symbol + ')',
                    align: 'left' },
-          xaxis: { type: 'datetime' },
+          xaxis: { type: 'datetime'},
           yaxis: { tooltip: { enabled: true }}
         };
         return (<CandleStickChart key={item.symbol} options={_options} series={_series}/>);

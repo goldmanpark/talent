@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 const fs = require('fs');
 const { PythonShell } = require("python-shell");
 const port = process.env.PORT || 3001;
@@ -7,7 +6,6 @@ const port = process.env.PORT || 3001;
 const app = express();
 const tickers = JSON.parse(fs.readFileSync('./jsonData/tickers.json', 'utf8'));
 
-app.use(cors());
 app.use(express.json());
 app.listen(port, () => console.log("Backend server lives on " + port));
 
@@ -15,11 +13,11 @@ app.get("/dashboard", (req, res) => {
   res.json(tickers);
 });
 
-app.post("/dashboard/detail", (req, res) => {
+app.get("/dashboard/:ticker", (req, res) => {
   try {
-    var startDate = req.body.startDate;
-    var endDate = req.body.endDate;
-    var ticker = req.body.ticker;
+    var startDate = req.query.startDate;
+    var endDate = req.query.endDate;
+    var ticker = req.query.ticker;
     fs.readFile('./jsonData/info/' + ticker + '.json', 'utf8', (err1, infoJson) => {
       if (err1)
         throws;
@@ -40,8 +38,8 @@ app.post("/dashboard/detail", (req, res) => {
 
 function jsonHistoryTransfer(histJson, startDate, endDate) {
   var tempJson = [];
-  histJson.data.map(item => {
-    if(item.Date >= startDate, item.Date <= endDate){
+  histJson.data.forEach(item => {
+    if(new Date(item.Date) > new Date(startDate) && new Date(item.Date) < new Date(endDate)){
       tempJson.push({ // Send json as ApexChart can read
         x : item.Date,
         y : [item.Open, item.High, item.Low, item.Close]
