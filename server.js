@@ -4,7 +4,7 @@ const { PythonShell } = require("python-shell");
 const port = process.env.PORT || 3001;
 
 const app = express();
-const tickers = JSON.parse(fs.readFileSync('./jsonData/tickers.json', 'utf8'));
+const tickers = JSON.parse(fs.readFileSync('./rawData/tickers.json', 'utf8'));
 
 app.use(express.json());
 app.listen(port, () => console.log("Backend server lives on " + port));
@@ -18,10 +18,10 @@ app.get("/dashboard/:ticker", (req, res) => {
     var startDate = req.query.startDate;
     var endDate = req.query.endDate;
     var ticker = req.query.ticker;
-    fs.readFile('./jsonData/info/' + ticker + '.json', 'utf8', (err1, infoJson) => {
+    fs.readFile('./rawData/info/' + ticker + '.json', 'utf8', (err1, infoJson) => {
       if (err1)
         throws;
-      fs.readFile('./jsonData/history/' + ticker + '.json', 'utf8', (err2, histJson) => {
+      fs.readFile('./rawData/history/' + ticker + '.json', 'utf8', (err2, histJson) => {
         if (err2)
           throws;
         res.json({

@@ -1,7 +1,10 @@
 #data file directory
-#/jsonData/history
-#/jsonData/info
+#/rawData/info
+#/rawData/history
+
 /build
+/.idea
+
 # Logs
 logs
 *.log
