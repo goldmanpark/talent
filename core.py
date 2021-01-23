@@ -2,7 +2,7 @@ import sys
 import yfinance as yf
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 tickers = []
 jsonPath = os.getcwd() + "/rawData"
@@ -23,6 +23,16 @@ def compareStringDate(dt1, dt2):
         return -1
     if date1 < date2:
         return 1
+
+def calcStringDate(strDate, day, opt):
+    dt = datetime.strptime(strDate, "%Y-%m-%d")
+    if opt == 'add':
+        dt = dt + timedelta(days=day)
+    elif opt == 'sub':
+        dt = dt - timedelta(days=day)
+    else:
+        print("opt error : " + opt)
+    return dt.strftime("%Y-%m-%d")
 
 def getStoredHistoryData(name):
     try:
@@ -82,13 +92,13 @@ try:
 
             if compareStringDate(newStartDate, oldStartDate) == 1:
                 storeFlag = True
-                hist = ticker.history(start=newStartDate, end=oldStartDate, interval="1d")
+                hist = ticker.history(start=newStartDate, end=calcStringDate(oldStartDate, 1, 'sub'), interval="1d")
                 histJson = json.loads(hist.to_json(orient="table"))
                 oldHistJson["data"] = histJson["data"] + oldHistJson["data"]
                 oldHistJson["schema"]["startDate"] = newStartDate
             if compareStringDate(oldEndDate, newEndDate) == 1:
                 storeFlag = True
-                hist = ticker.history(start=oldEndDate, end=newEndDate, interval="1d")
+                hist = ticker.history(start=oldEndDate, end=calcStringDate(newEndDate, 1, 'add'), interval="1d")
                 histJson = json.loads(hist.to_json(orient="table"))
                 oldHistJson["data"] = oldHistJson["data"] + histJson["data"]
                 oldHistJson["schema"]["endDate"] = newEndDate
