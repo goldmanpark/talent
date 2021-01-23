@@ -24,6 +24,17 @@ def compareStringDate(dt1, dt2):
     if date1 < date2:
         return 1
 
+def getStoredHistoryData(name):
+    try:
+        with open(os.path.join(histPath, name + ".json"), "r") as oldJsonFile:
+            oldHistJson = json.load(oldJsonFile)
+            return oldHistJson
+    except FileNotFoundError as e:
+        return None
+    except Exception as e:
+        print("json open exception : " + e)
+        sys.exit(0)
+
 try:
     newStartDate = sys.argv[1]
     newEndDate = sys.argv[2]
@@ -32,11 +43,9 @@ except Exception as e:
     sys.exit(0)
 
 try:
+    # 1. Get tickers
     with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
         tickers = json.load(jsonFile)
-        if tickers is None:
-            print("Cannot find ticker list")
-            sys.exit(0)
 
     for x in tickers["tickerNames"]:
         ticker = yf.Ticker(x["name"])
@@ -54,27 +63,39 @@ try:
             4. json stored data should have no blank(except for holiday)
         '''
 
-        with open(os.path.join(histPath, x["name"] + ".json"), "r") as oldJsonFile:
-            if oldJsonFile is None:
-                hist = ticker.history(start=newStartDate, end=newEndDate, interval="1d")
-                histJson = json.loads(hist.to_json(orient="table"))
-                histJson["schema"]["startDate"] = newStartDate
-                histJson["schema"]["endDate"] = newEndDate
-                with open(os.path.join(histPath, x["name"] + ".json"), "w") as jsonFile:
-                    json.dump(histJson, jsonFile, indent=4)
-            else:
-                oldHist = json.loads(oldJsonFile.to_json(orient="table"))
-                oldStartDate = oldHist["startDate"]
-                oldEndDate = oldHist["endDate"]
-                startDate = ''
-                endDate = ''
+        oldHistJson = getStoredHistoryData(x["name"])
 
-                # under construction
-                
-                hist = ticker.history(start=startDate, end=endDate, interval="1d")
+        # create new history json
+        if oldHistJson is None:
+            hist = ticker.history(start=newStartDate, end=newEndDate, interval="1d")
+            histJson = json.loads(hist.to_json(orient="table"))
+            histJson["schema"]["startDate"] = newStartDate
+            histJson["schema"]["endDate"] = newEndDate
+            with open(os.path.join(histPath, x["name"] + ".json"), "w") as jsonFile:
+                json.dump(histJson, jsonFile, indent=4)
+        
+        # modify old history json or do nothing
+        else:
+            oldStartDate = oldHistJson["schema"]["startDate"]
+            oldEndDate = oldHistJson["schema"]["endDate"]
+            storeFlag = False
+
+            if compareStringDate(newStartDate, oldStartDate) == 1:
+                storeFlag = True
+                hist = ticker.history(start=newStartDate, end=oldStartDate, interval="1d")
                 histJson = json.loads(hist.to_json(orient="table"))
+                oldHistJson["data"] = histJson["data"] + oldHistJson["data"]
+                oldHistJson["schema"]["startDate"] = newStartDate
+            if compareStringDate(oldEndDate, newEndDate) == 1:
+                storeFlag = True
+                hist = ticker.history(start=oldEndDate, end=newEndDate, interval="1d")
+                histJson = json.loads(hist.to_json(orient="table"))
+                oldHistJson["data"] = oldHistJson["data"] + histJson["data"]
+                oldHistJson["schema"]["endDate"] = newEndDate
+
+            if storeFlag == True:
                 with open(os.path.join(histPath, x["name"] + ".json"), "w") as jsonFile:
-                    json.dump(histJson, jsonFile, indent=4)
+                    json.dump(oldHistJson, jsonFile, indent=4)
 
 except Exception as e:
     print("yfinance or json exception : " + e)
