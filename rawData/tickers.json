@@ -1,10 +1,13 @@
 {
     "tickerNames":[
+        { "name" : "^DJI"},
+        { "name" : "^GSPC"},
+        { "name" : "^IXIC"},
         { "name" : "^VIX"},
         { "name" : "^VXN"},
+        { "name" : "^KS11"},
+        { "name" : "^KQ11"},
         { "name" : "DX-Y.NYB"},
-        { "name" : "^IXIC"},
-        { "name" : "^DJI"},
-        { "name" : "^SPX"}
+        { "name" : "KRW=X"}
     ]
 }

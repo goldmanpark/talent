@@ -42,7 +42,7 @@ function jsonHistoryTransfer(histJson, startDate, endDate) {
     if(new Date(item.Date) > new Date(startDate) && new Date(item.Date) < new Date(endDate)){
       tempJson.push({ // Send json as ApexChart can read
         x : item.Date,
-        y : [item.Open, item.High, item.Low, item.Close]
+        y : [item.Open.toFixed(2), item.High.toFixed(2), item.Low.toFixed(2), item.Close.toFixed(2)]
       });
     }
   });
