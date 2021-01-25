@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import { CandleStickChart } from './CandleStickChart';
 import axios from 'axios';
+import { CandleStickChart } from './CandleStickChart';
+import { option as candleStickOption } from './candleStickOption.json'
 
 export default class App extends Component{
   constructor(props){
     super(props);
     var today = new Date();
-    var ago = new Date(today.getTime() - (7 * 24 * 60 * 60 * 1000));
+    var ago = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
     this.state = {
       tickers : [], // list of tickers
       details : [], // list of security details
@@ -86,13 +87,9 @@ export default class App extends Component{
     if(this.state.details != null && this.state.details.length > 0)
       return this.state.details.map(item => {
         var _series = [{data : item.data}];
-        var _options = {
-          chart: { type: 'candlestick' },
-          title: { text: item.shortName + ' (' + item.symbol + ')',
-                   align: 'left' },
-          xaxis: { type: 'datetime'},
-          yaxis: { tooltip: { enabled: true }}
-        };
+        var _options = candleStickOption;
+        _options.title.text = item.shortName + ' (' + item.symbol + ')';
+        
         return (<CandleStickChart key={item.symbol} options={_options} series={_series}/>);
       });
     else
@@ -102,16 +99,19 @@ export default class App extends Component{
   render(){
     return (
       <div>
-        <h4 className="bg-primary text-white text-center p-1">
-          Talent
-        </h4>
-        <form onSubmit={this.submitDateRange}>
-          <input type="date" value={this.state.startDate} onChange={this.updateStartDate}/>
-          <span> ~ </span>
-          <input type="date" value={this.state.endDate} onChange={this.updateEndDate}/>
-          <span> </span>
-          <input type="submit" value="Send Request"/>
-        </form>
+        <div className="main-header">
+          <h4 className="bg-primary text-white text-center p-1">
+            Talent
+          </h4>
+          <form onSubmit={this.submitDateRange}>
+            <input type="date" value={this.state.startDate} onChange={this.updateStartDate}/>
+            <span> ~ </span>
+            <input type="date" value={this.state.endDate} onChange={this.updateEndDate}/>
+            <span> </span>
+            <input type="submit" value="Send Request"/>
+          </form>
+        </div>
+        
         <div className="square-FlexGrid">
           { this.createCandlecharts() }
         </div>

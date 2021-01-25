@@ -1,0 +1,22 @@
+{
+    "option": {
+        "chart": { 
+            "type": "candlestick" 
+        },
+        "title": { 
+            "text": "",
+            "align": "left" 
+        },
+        "xaxis": { 
+            "type": "datetime", 
+            "labels": {
+                "format": "yyyy-MM-dd"
+            }
+        },
+        "yaxis": { 
+            "tooltip": { 
+                "enabled": true 
+            }
+        }
+    }    
+}
