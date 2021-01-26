@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { CandleStickChart } from './CandleStickChart';
 import { option as candleStickOption } from './candleStickOption.json'
 
@@ -89,7 +90,8 @@ export default class App extends Component{
         var _series = [{data : item.data}];
         var _options = candleStickOption;
         _options.title.text = item.shortName + ' (' + item.symbol + ')';
-        
+        _options.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
+
         return (<CandleStickChart key={item.symbol} options={_options} series={_series}/>);
       });
     else
@@ -99,20 +101,39 @@ export default class App extends Component{
   render(){
     return (
       <div>
-        <div className="main-header">
-          <h4 className="bg-primary text-white text-center p-1">
-            Talent
-          </h4>
-          <form onSubmit={this.submitDateRange}>
-            <input type="date" value={this.state.startDate} onChange={this.updateStartDate}/>
-            <span> ~ </span>
-            <input type="date" value={this.state.endDate} onChange={this.updateEndDate}/>
-            <span> </span>
-            <input type="submit" value="Send Request"/>
-          </form>
+        <div class="main-header">          
+          <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <span class="navbar-brand mb-0 h1">Talent</span>
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+              <li class="nav-item">
+                <a class="nav-link font-weight-bold" href="#"> Market Index </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link font-weight-bold" href="#"> Currency </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link font-weight-bold dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Future
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item">Gold</a>
+                  <a class="dropdown-item">Copper</a>
+                  <a class="dropdown-item">Oil</a>
+                </div>
+              </li>
+            </ul>
+            <form class="form-inline" onSubmit={ this.submitDateRange }>
+              <input type="date" class="form-control m-sm-1 p-1" value={this.state.startDate} onChange={this.updateStartDate}/>
+              <span class="navbar-text mx-2"> ~ </span>
+              <input type="date" class="form-control m-sm-1 p-1" value={this.state.endDate} onChange={this.updateEndDate}/>
+              <span> </span>
+              <input type="submit" class="btn btn-secondary font-weight-bold m-1" value="Send Request"/>
+            </form>
+          </nav>          
         </div>
         
-        <div className="square-FlexGrid">
+        <div class="square-FlexGrid">
           { this.createCandlecharts() }
         </div>
       </div>

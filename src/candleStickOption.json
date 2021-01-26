@@ -8,10 +8,8 @@
             "align": "left" 
         },
         "xaxis": { 
-            "type": "datetime", 
-            "labels": {
-                "format": "yyyy-MM-dd"
-            }
+            "type": "category", 
+            "labels": {}
         },
         "yaxis": { 
             "tooltip": { 
