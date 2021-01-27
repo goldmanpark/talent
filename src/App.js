@@ -45,25 +45,8 @@ export default class App extends Component{
   }
 
   compareDate(date1, date2){
-    // return -1 : date1 > date2
-    // return 0 : date1 == date2
-    // return 1 : date1 < date2
-    let dt1 = date1.split("-").map(x => parseInt(x));
-    let dt2 = date2.split("-").map(x => parseInt(x));
-
-    if(dt1[0] > dt2[0]){ return -1; }
-    else if(dt1[0] < dt2[0]){ return 1; }
-    else
-    {
-      if(dt1[1] > dt2[1]){ return -1; }
-      else if(dt1[1] < dt2[1]){ return 1; }
-      else
-      {
-        if(dt1[2] > dt2[2]){ return -1; }
-        else if(dt1[2] < dt2[2]){ return 1; }
-        else{ return 0; }
-      }
-    }
+    let date = dayjs(date2)
+    return date.diff(date1, 'day'); // date2 - date1
   }
 
   updateStartDate = (event) => 
@@ -74,7 +57,7 @@ export default class App extends Component{
 
   submitDateRange = (event) => {
     event.preventDefault();
-    if(this.compareDate(this.state.startDate, this.state.endDate) === -1)
+    if(this.compareDate(this.state.startDate, this.state.endDate) < 0)
       alert("date error");
     else if(this.state.tickers != null){
       this.setState({details : []});
