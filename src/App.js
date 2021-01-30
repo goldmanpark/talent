@@ -18,17 +18,16 @@ export default class App extends Component{
   componentDidMount(){
     axios.get('/dashboard').then(res => {
       this.setState({tickers : res.data.tickerNames});
-      this.state.tickers.forEach(x => this.getJsonData(x.name));
     }).catch(error =>{
       console.log(error);
     });
   }
 
-  async getJsonData(_ticker){
+  async getJsonData(_ticker, _startDate, _endDate){
     await axios.get('/dashboard/' + _ticker, {
       params : {
-        startDate : this.state.startDate,
-        endDate : this.state.endDate,
+        startDate : _startDate,
+        endDate : _endDate,
         ticker : _ticker
       }
     }).then(res => {
@@ -41,9 +40,7 @@ export default class App extends Component{
 
   headerSubmitCallback = (_startDate, _endDate) => {
     this.setState({details : []});
-    this.setState({startDate : _startDate});
-    this.setState({endDate : _endDate});
-    this.state.tickers.forEach(x => this.getJsonData(x.name));
+    this.state.tickers.forEach(x => this.getJsonData(x.name, _startDate, _endDate));
   }
 
   createCandlecharts = () => {

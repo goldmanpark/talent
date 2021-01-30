@@ -4,15 +4,19 @@ import dayjs from 'dayjs';
 export class Header extends React.Component{
   constructor(props){
     super(props);
-    var today = new Date();
-    var ago = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
+    var today = dayjs();
+    var ago = dayjs(today).subtract(1, 'month');
     this.state = {
+      // date is allowed as string in date type form
       startDate : ago.toISOString().substr(0,10),
       endDate :  today.toISOString().substr(0,10)
     }
     this.updateStartDate = this.updateStartDate.bind(this);
     this.updateEndDate = this.updateEndDate.bind(this);
     this.submitDateRange = this.submitDateRange.bind(this);
+    let _startDate = this.state.startDate;
+    let _endDate = this.state.endDate;
+    this.props.callbackSubmit(_startDate, _endDate);
   }
   
   updateStartDate = (event) => 
@@ -25,6 +29,7 @@ export class Header extends React.Component{
     event.preventDefault();
     let date = dayjs(this.state.endDate);
     let result = date.diff(this.state.startDate, 'day');
+    
     if(result < 0)
       alert("date error");
     else{
