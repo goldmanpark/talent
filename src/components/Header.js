@@ -13,7 +13,10 @@ export class Header extends React.Component{
     }
     this.updateStartDate = this.updateStartDate.bind(this);
     this.updateEndDate = this.updateEndDate.bind(this);
-    this.submitDateRange = this.submitDateRange.bind(this);
+    this.submitDateRange = this.submitDateRange.bind(this);    
+  }
+
+  componentDidMount(){
     let _startDate = this.state.startDate;
     let _endDate = this.state.endDate;
     this.props.callbackSubmit(_startDate, _endDate);

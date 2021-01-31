@@ -13,9 +13,10 @@ export default class App extends Component{
       details : [], // list of security details
     }
     this.headerSubmitCallback = this.headerSubmitCallback.bind(this);
+    this.getTickerList();
   }
 
-  componentDidMount(){
+  getTickerList(){
     axios.get('/dashboard').then(res => {
       this.setState({tickers : res.data.tickerNames});
     }).catch(error =>{
@@ -24,6 +25,8 @@ export default class App extends Component{
   }
 
   async getJsonData(_ticker, _startDate, _endDate){
+    if(_ticker == null)
+      return;
     await axios.get('/dashboard/' + _ticker, {
       params : {
         startDate : _startDate,
