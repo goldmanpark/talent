@@ -17,9 +17,11 @@ export class Header extends React.Component{
   }
 
   componentDidMount(){
-    let _startDate = this.state.startDate;
-    let _endDate = this.state.endDate;
-    this.props.callbackSubmit(_startDate, _endDate);
+    setTimeout(() => {
+      let _startDate = this.state.startDate;
+      let _endDate = this.state.endDate;
+      this.props.callbackSubmit(_startDate, _endDate);
+    }, 100);    // wait until App.js get tickers from server
   }
   
   updateStartDate = (event) => 

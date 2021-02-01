@@ -25,7 +25,7 @@ export default class App extends Component{
   }
 
   async getJsonData(_ticker, _startDate, _endDate){
-    if(_ticker == null)
+    if(_ticker === null || _ticker === undefined)
       return;
     await axios.get('/dashboard/' + _ticker, {
       params : {
@@ -41,9 +41,12 @@ export default class App extends Component{
     });
   }
 
-  headerSubmitCallback = (_startDate, _endDate) => {
+  headerSubmitCallback = async (_startDate, _endDate) => {
     this.setState({details : []});
-    this.state.tickers.forEach(x => this.getJsonData(x.name, _startDate, _endDate));
+    let promises = this.state.tickers.map(x => new Promise(
+      () => { this.getJsonData(x.name, _startDate, _endDate) }
+    ));
+    await Promise.all(promises);
   }
 
   createCandlecharts = () => {
