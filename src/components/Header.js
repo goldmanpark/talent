@@ -1,5 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
 export class Header extends React.Component{
   constructor(props){
@@ -13,7 +14,8 @@ export class Header extends React.Component{
     }
     this.updateStartDate = this.updateStartDate.bind(this);
     this.updateEndDate = this.updateEndDate.bind(this);
-    this.submitDateRange = this.submitDateRange.bind(this);    
+    this.submitDateRange = this.submitDateRange.bind(this);   
+    this.changeNavItem = this.changeNavItem.bind(this) ;
   }
 
   componentDidMount(){
@@ -21,9 +23,14 @@ export class Header extends React.Component{
       let _startDate = this.state.startDate;
       let _endDate = this.state.endDate;
       this.props.callbackSubmit(_startDate, _endDate);
-    }, 100);    // wait until App.js get tickers from server
+    }, 150);    // wait until App.js get tickers from server
   }
-  
+
+  /******************** NAVBAR EVENT ********************/
+  changeNavItem = (nav) =>
+    this.props.callbackSelectNavItem(nav);
+
+  /******************** FORM EVENT ********************/
   updateStartDate = (event) => 
     this.setState({startDate : event.target.value});
 
@@ -37,7 +44,7 @@ export class Header extends React.Component{
     
     if(result < 0)
       alert("date error");
-    else{
+    else {
       let _startDate = this.state.startDate;
       let _endDate = this.state.endDate;
       this.props.callbackSubmit(_startDate, _endDate);
@@ -46,37 +53,27 @@ export class Header extends React.Component{
 
   render() {
     return (
-      <div class="main-header">          
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-          <span class="navbar-brand mb-0 h1">Talent</span>
-          <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-            <li class="nav-item">
-              <a class="nav-link font-weight-bold" href="#"> Market Index </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link font-weight-bold" href="#"> Currency </a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link font-weight-bold dropdown-toggle" href="#" id="navbarDropdown" role="button" 
-                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Future
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item">Gold</a>
-                <a class="dropdown-item">Copper</a>
-                <a class="dropdown-item">Oil</a>
-              </div>
-            </li>
-          </ul>
-          <form class="form-inline" onSubmit={ this.submitDateRange }>
-            <input type="date" class="form-control m-sm-1 p-1" value={this.state.startDate} onChange={this.updateStartDate}/>
-            <span class="navbar-text mx-2"> ~ </span>
-            <input type="date" class="form-control m-sm-1 p-1" value={this.state.endDate} onChange={this.updateEndDate}/>
-            <span> </span>
-            <input type="submit" class="btn btn-secondary font-weight-bold m-1" value="Send Request"/>
-          </form>
-        </nav>
-      </div>
+      <Navbar bg="dark" exapnd="lg" variant="dark" sticky="top"
+              onSelect={ this.changeNavItem }>
+        <Navbar.Brand>Talent</Navbar.Brand>
+        <Nav className="mr-auto">
+          <Nav.Link eventKey="market" href="market">Market Index</Nav.Link>
+          <Nav.Link eventKey="currency" href="currency">Currency</Nav.Link>
+          <NavDropdown title="Futures" id="basic-nav-dropdown">
+            <NavDropdown.Item eventKey="future.gold" href="future/gold">Gold</NavDropdown.Item>
+            <NavDropdown.Item eventKey="future.silver" href="future/silver">Silver</NavDropdown.Item>
+            <NavDropdown.Item eventKey="future.oil" href="future/oil">Oil</NavDropdown.Item>
+          </NavDropdown>
+        </Nav>
+        
+        <form class="form-inline" onSubmit={ this.submitDateRange }>
+          <input type="date" class="form-control m-sm-1 p-1" value={this.state.startDate} onChange={this.updateStartDate}/>
+          <span class="navbar-text mx-2"> ~ </span>
+          <input type="date" class="form-control m-sm-1 p-1" value={this.state.endDate} onChange={this.updateEndDate}/>
+          <span> </span>
+          <input type="submit" class="btn btn-secondary font-weight-bold m-1" value="Send Request"/>
+        </form>
+      </Navbar>
     )
   }
 }

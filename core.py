@@ -57,7 +57,7 @@ try:
     with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
         tickers = json.load(jsonFile)
 
-    for x in tickers["tickerNames"]:
+    for x in tickers["tickerlist"]:
         ticker = yf.Ticker(x["name"])
         with open(os.path.join(infoPath, x["name"] + ".json"), "w") as jsonFile:
             json.dump(ticker.info, jsonFile, indent=4)

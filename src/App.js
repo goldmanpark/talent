@@ -13,12 +13,13 @@ export default class App extends Component{
       details : [], // list of security details
     }
     this.headerSubmitCallback = this.headerSubmitCallback.bind(this);
+    this.headerSelectNavCallback = this.headerSelectNavCallback.bind(this);
     this.getTickerList();
   }
 
   getTickerList(){
     axios.get('/dashboard').then(res => {
-      this.setState({tickers : res.data.tickerNames});
+      this.setState({tickers : res.data.tickerlist});
     }).catch(error =>{
       console.log(error);
     });
@@ -40,13 +41,12 @@ export default class App extends Component{
       console.log(error);
     });
   }
+  
+  headerSelectNavCallback = () => {}
 
   headerSubmitCallback = async (_startDate, _endDate) => {
     this.setState({details : []});
-    let promises = this.state.tickers.map(x => new Promise(
-      () => { this.getJsonData(x.name, _startDate, _endDate) }
-    ));
-    await Promise.all(promises);
+    this.state.tickers.forEach(x => this.getJsonData(x.name, _startDate, _endDate));
   }
 
   createCandlecharts = () => {
@@ -66,7 +66,8 @@ export default class App extends Component{
   render(){
     return (
       <div>
-        <Header callbackSubmit={ this.headerSubmitCallback }/>
+        <Header callbackSubmit={ this.headerSubmitCallback }
+                callbackSelectNavItem={ this.headerSelectNavCallback }/>
         <div class="square-FlexGrid">
           { this.createCandlecharts() }
         </div>

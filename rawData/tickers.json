@@ -1,13 +1,13 @@
 {
-    "tickerNames":[
-        { "name" : "^DJI"},
-        { "name" : "^GSPC"},
-        { "name" : "^IXIC"},
-        { "name" : "^VIX"},
-        { "name" : "^VXN"},
-        { "name" : "^KS11"},
-        { "name" : "^KQ11"},
-        { "name" : "DX-Y.NYB"},
-        { "name" : "KRW=X"}
+    "tickerlist":[
+        { "name" : "^DJI", "type" : "market"},
+        { "name" : "^GSPC", "type" : "market"},
+        { "name" : "^IXIC", "type" : "market"},
+        { "name" : "^VIX", "type" : "market"},
+        { "name" : "^VXN", "type" : "market"},
+        { "name" : "^KS11", "type" : "market"},
+        { "name" : "^KQ11", "type" : "market"},
+        { "name" : "DX-Y.NYB", "type" : "currency"},
+        { "name" : "KRW=X", "type" : "currency"}
     ]
 }
