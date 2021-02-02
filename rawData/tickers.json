@@ -3,11 +3,21 @@
         { "name" : "^DJI", "type" : "market"},
         { "name" : "^GSPC", "type" : "market"},
         { "name" : "^IXIC", "type" : "market"},
+        { "name" : "^NDX", "type" : "market"},
+        { "name" : "^RUT", "type" : "market"},
         { "name" : "^VIX", "type" : "market"},
         { "name" : "^VXN", "type" : "market"},
+        { "name" : "^RVX", "type" : "market"},
         { "name" : "^KS11", "type" : "market"},
         { "name" : "^KQ11", "type" : "market"},
+        { "name" : "^N225", "type" : "market"},
+        { "name" : "000001.SS", "type" : "market"},
+        { "name" : "SX5E.SW", "type" : "market"},
+        { "name" : "^BSESN", "type" : "market"},
         { "name" : "DX-Y.NYB", "type" : "currency"},
-        { "name" : "KRW=X", "type" : "currency"}
+        { "name" : "KRW=X", "type" : "currency"},
+        { "name" : "EURUSD=X", "type" : "currency"},
+        { "name" : "JPY=X", "type" : "currency"},
+        { "name" : "CNY=X", "type" : "currency"}
     ]
 }
