@@ -11,6 +11,9 @@ export default class App extends Component{
     this.state = {
       tickers : [], // list of tickers
       details : [], // list of security details
+      selectedMenu : "",
+      startDate : "",
+      endDate : ""
     }
     this.headerSubmitCallback = this.headerSubmitCallback.bind(this);
     this.headerSelectNavCallback = this.headerSelectNavCallback.bind(this);
@@ -19,7 +22,7 @@ export default class App extends Component{
 
   getTickerList(){
     axios.get('/dashboard').then(res => {
-      this.setState({tickers : res.data.tickerlist});
+      this.setState({tickers : res.data});
     }).catch(error =>{
       console.log(error);
     });
@@ -42,11 +45,28 @@ export default class App extends Component{
     });
   }
   
-  headerSelectNavCallback = () => {}
+  headerSelectNavCallback = (_selectedMenu) => {
+    if(_selectedMenu !== this.state.selectedMenu){
+      this.setState({selectedMenu : _selectedMenu});
+      this.setState({details : []});
+    }
+    if(this.state.startDate !== "" && this.state.endDate !== ""){
+      this.setState({details : []});
+      this.state.tickers[this.state.selectedMenu].forEach(x => 
+        this.getJsonData(x.name, this.state.startDate, this.state.endDate)
+      );
+    } 
+  }
 
-  headerSubmitCallback = async (_startDate, _endDate) => {
+  headerSubmitCallback = (_startDate, _endDate) => {
+    this.setState({startDate : _startDate});
+    this.setState({endDate : _endDate});
     this.setState({details : []});
-    this.state.tickers.forEach(x => this.getJsonData(x.name, _startDate, _endDate));
+    if(this.state.selectedMenu !== ""){
+      this.state.tickers[this.state.selectedMenu].forEach(x => 
+        this.getJsonData(x.name, _startDate, _endDate)
+      );
+    }      
   }
 
   createCandlecharts = () => {
