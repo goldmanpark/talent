@@ -20,10 +20,10 @@ app.get("/dashboard/:ticker", (req, res) => {
     var ticker = req.query.ticker;
     fs.readFile('./rawData/info/' + ticker + '.json', 'utf8', (err1, infoJson) => {
       if (err1)
-        throws;
+        throw err1;
       fs.readFile('./rawData/history/' + ticker + '.json', 'utf8', (err2, histJson) => {
         if (err2)
-          throws;
+          throw err2;
         res.json({
           'symbol': ticker,
           'shortName': JSON.parse(infoJson).shortName,

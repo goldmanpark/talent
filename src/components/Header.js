@@ -17,16 +17,13 @@ export class Header extends React.Component{
     this.updateEndDate = this.updateEndDate.bind(this);
     this.submitDateRange = this.submitDateRange.bind(this);   
     this.selectNavItem = this.selectNavItem.bind(this);
-    
-    this.props.callbackSelectNavItem(this.state.selectedMenu);
   }
 
   componentDidMount(){
     setTimeout(() => {
-      let _startDate = this.state.startDate;
-      let _endDate = this.state.endDate;
-      this.props.callbackSubmit(_startDate, _endDate);
-    }, 1000);    // wait until App.js get tickers from server
+      this.props.callbackSelectNavItem(this.state.selectedMenu);
+      this.props.callbackSubmit(this.state.startDate, this.state.endDate);
+    }, 300);    // wait until App.js get tickers from server
   }
 
   /******************** NAVBAR EVENT ********************/
@@ -49,25 +46,23 @@ export class Header extends React.Component{
     
     if(result < 0)
       alert("date error");
-    else {
-      let _startDate = this.state.startDate;
-      let _endDate = this.state.endDate;
-      this.props.callbackSubmit(_startDate, _endDate);
-    }      
+    else 
+      this.props.callbackSubmit(this.state.startDate, this.state.endDate);  
   }
 
   render() {
     return (
-      <Navbar bg="dark" exapnd="lg" variant="dark" sticky="top"
-              onSelect={ this.selectNavItem }>
+      <Navbar bg="dark" exapnd="lg" variant="dark" sticky="top" fixed="top"
+              class=".main_header">
         <Navbar.Brand>Talent</Navbar.Brand>
-        <Nav className="mr-auto">
-          <Nav.Link eventKey="market" href="market">Market Index</Nav.Link>
-          <Nav.Link eventKey="currency" href="currency">Currency</Nav.Link>
+        <Nav className="mr-auto" variant="pills" defaultActiveKey="market"
+             onSelect={ this.selectNavItem }>
+          <Nav.Link eventKey="market">Market Index</Nav.Link>
+          <Nav.Link eventKey="currency">Currency</Nav.Link>
           <NavDropdown title="Futures" id="basic-nav-dropdown">
-            <NavDropdown.Item eventKey="future.gold" href="gold">Gold</NavDropdown.Item>
-            <NavDropdown.Item eventKey="future.silver" href="silver">Silver</NavDropdown.Item>
-            <NavDropdown.Item eventKey="future.oil" href="oil">Oil</NavDropdown.Item>
+            <NavDropdown.Item eventKey="future.gold">Gold</NavDropdown.Item>
+            <NavDropdown.Item eventKey="future.silver">Silver</NavDropdown.Item>
+            <NavDropdown.Item eventKey="future.oil">Oil</NavDropdown.Item>
           </NavDropdown>
         </Nav>
         

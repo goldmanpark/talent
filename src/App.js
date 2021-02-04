@@ -17,10 +17,7 @@ export default class App extends Component{
     }
     this.headerSubmitCallback = this.headerSubmitCallback.bind(this);
     this.headerSelectNavCallback = this.headerSelectNavCallback.bind(this);
-    this.getTickerList();
-  }
-
-  getTickerList(){
+    
     axios.get('/dashboard').then(res => {
       this.setState({tickers : res.data});
     }).catch(error =>{
@@ -38,8 +35,12 @@ export default class App extends Component{
         ticker : _ticker
       }
     }).then(res => {
-      console.log(res.data);
-      this.setState({details : [...this.state.details, res.data]});
+      let idx = this.state.details.indexOf(x => x.symbol === res.data.symbol);
+      if(idx === -1)
+        this.setState({details : [...this.state.details, res.data]});
+      else
+        this.setState({details : [...this.state.details.slice(0, idx), res.data,
+                                  ...this.state.details.slice(idx + 1)]});
     }).catch(error => {
       console.log(error);
     });
@@ -50,22 +51,28 @@ export default class App extends Component{
       this.setState({selectedMenu : _selectedMenu});
       this.setState({details : []});
     }
-    if(this.state.startDate !== "" && this.state.endDate !== ""){
-      this.setState({details : []});
-      this.state.tickers[this.state.selectedMenu].forEach(x => 
-        this.getJsonData(x.name, this.state.startDate, this.state.endDate)
-      );
-    } 
+    if(this.state.startDate !== "" && this.state.endDate !== "" ){
+      var tickerArr = this.state.tickers[_selectedMenu];
+      if(tickerArr !== null && tickerArr !== undefined){
+        tickerArr.forEach(x => 
+          this.getJsonData(x.name, this.state.startDate, this.state.endDate)
+        );
+      }
+    }
   }
 
   headerSubmitCallback = (_startDate, _endDate) => {
     this.setState({startDate : _startDate});
     this.setState({endDate : _endDate});
     this.setState({details : []});
+
     if(this.state.selectedMenu !== ""){
-      this.state.tickers[this.state.selectedMenu].forEach(x => 
-        this.getJsonData(x.name, _startDate, _endDate)
-      );
+      var tickerArr = this.state.tickers[this.state.selectedMenu];
+      if(tickerArr !== null && tickerArr !== undefined){
+        tickerArr.forEach(x => 
+          this.getJsonData(x.name, _startDate, _endDate)
+        );
+      }      
     }      
   }
 

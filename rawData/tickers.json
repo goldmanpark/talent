@@ -7,12 +7,10 @@
         { "name" : "^RUT" },
         { "name" : "^VIX" },
         { "name" : "^VXN" },
-        { "name" : "^RVX" },
         { "name" : "^KS11" },
         { "name" : "^KQ11" },
         { "name" : "^N225" },
         { "name" : "000001.SS" },
-        { "name" : "SX5E.SW" },
         { "name" : "^BSESN" }
     ],
     "currency" : [
