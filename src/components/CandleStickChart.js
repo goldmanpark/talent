@@ -7,7 +7,7 @@ export class CandleStickChart extends React.Component {
       <div className="square-FlexItem">
         <Chart options={this.props.options} 
                series={this.props.series} 
-               type="candlestick" />
+               type={this.props.type} />
       </div>
     )
   }

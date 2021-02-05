@@ -1,6 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import { Navbar, Nav, NavDropdown, DropdownButton, Dropdown } from 'react-bootstrap';
 
 export class Header extends React.Component{
   constructor(props){
@@ -13,24 +13,31 @@ export class Header extends React.Component{
       endDate :  today.toISOString().substr(0,10),
       selectedMenu : "market"
     }
+  }
+
+  componentDidMount(){
     this.updateStartDate = this.updateStartDate.bind(this);
     this.updateEndDate = this.updateEndDate.bind(this);
     this.submitDateRange = this.submitDateRange.bind(this);   
     this.selectNavItem = this.selectNavItem.bind(this);
-  }
+    this.selectChartType = this.selectChartType.bind(this);
 
-  componentDidMount(){
     setTimeout(() => {
       this.props.callbackSelectNavItem(this.state.selectedMenu);
       this.props.callbackSubmit(this.state.startDate, this.state.endDate);
-    }, 300);    // wait until App.js get tickers from server
+    }, 500);    // wait until App.js get tickers from server
   }
 
-  /******************** NAVBAR EVENT ********************/
+  /******************* NAVBAR EVENT *******************/
   selectNavItem = (menu) => {
     this.setState({selectedMenu : menu});
     this.props.callbackSelectNavItem(menu);
-  }    
+  }
+
+  /***************** CHART TYPE EVENT *****************/
+  selectChartType = (type) => {
+    this.props.callbackSelectChartType(type);
+  }
 
   /******************** FORM EVENT ********************/
   updateStartDate = (event) => 
@@ -52,8 +59,7 @@ export class Header extends React.Component{
 
   render() {
     return (
-      <Navbar bg="dark" exapnd="lg" variant="dark" sticky="top" fixed="top"
-              class=".main_header">
+      <Navbar bg="dark" exapnd="lg" variant="dark" sticky="top" fixed="top">
         <Navbar.Brand>Talent</Navbar.Brand>
         <Nav className="mr-auto" variant="pills" defaultActiveKey="market"
              onSelect={ this.selectNavItem }>
@@ -65,13 +71,20 @@ export class Header extends React.Component{
             <NavDropdown.Item eventKey="future.oil">Oil</NavDropdown.Item>
           </NavDropdown>
         </Nav>
+
+        <DropdownButton title="Chart Type"
+                        onSelect={ this.selectChartType }>
+          <Dropdown.Item eventKey="line">Line</Dropdown.Item>
+          <Dropdown.Item eventKey="area">Area</Dropdown.Item>
+          <Dropdown.Item eventKey="candlestick">CandleStick</Dropdown.Item>
+        </DropdownButton>
         
-        <form class="form-inline" onSubmit={ this.submitDateRange }>
-          <input type="date" class="form-control m-sm-1 p-1" value={this.state.startDate} onChange={this.updateStartDate}/>
-          <span class="navbar-text mx-2"> ~ </span>
-          <input type="date" class="form-control m-sm-1 p-1" value={this.state.endDate} onChange={this.updateEndDate}/>
+        <form className="form-inline" onSubmit={ this.submitDateRange }>
+          <input type="date" className="form-control m-sm-1 p-1" value={this.state.startDate} onChange={this.updateStartDate}/>
+          <span className="navbar-text mx-2"> ~ </span>
+          <input type="date" className="form-control m-sm-1 p-1" value={this.state.endDate} onChange={this.updateEndDate}/>
           <span> </span>
-          <input type="submit" class="btn btn-secondary font-weight-bold m-1" value="Send Request"/>
+          <input type="submit" className="btn btn-secondary font-weight-bold m-1" value="Send Request"/>
         </form>
       </Navbar>
     )

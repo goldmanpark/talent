@@ -12,12 +12,17 @@ export default class App extends Component{
       tickers : [], // list of tickers
       details : [], // list of security details
       selectedMenu : "",
+      selectedChartType : "candlestick",
       startDate : "",
       endDate : ""
-    }
+    }    
+  }
+
+  componentDidMount(){
     this.headerSubmitCallback = this.headerSubmitCallback.bind(this);
     this.headerSelectNavCallback = this.headerSelectNavCallback.bind(this);
-    
+    this.headerSelectChartTypeCallback = this.headerSelectChartTypeCallback.bind(this);
+
     axios.get('/dashboard').then(res => {
       this.setState({tickers : res.data});
     }).catch(error =>{
@@ -26,7 +31,7 @@ export default class App extends Component{
   }
 
   async getJsonData(_ticker, _startDate, _endDate){
-    if(_ticker === null || _ticker === undefined)
+    if(!_ticker)
       return;
     await axios.get('/dashboard/' + _ticker, {
       params : {
@@ -51,20 +56,22 @@ export default class App extends Component{
       this.setState({selectedMenu : _selectedMenu});
       this.setState({details : []});
     }
-    if(this.state.startDate !== "" && this.state.endDate !== "" ){
+    if(this.state.startDate && this.state.endDate){
       var tickerArr = this.state.tickers[_selectedMenu];
-      if(tickerArr !== null && tickerArr !== undefined){
-        tickerArr.forEach(x => 
-          this.getJsonData(x.name, this.state.startDate, this.state.endDate)
-        );
+      if(tickerArr){
+        tickerArr.forEach(x => this.getJsonData(x.name, this.state.startDate, this.state.endDate));
       }
     }
+  }
+
+  headerSelectChartTypeCallback = (_type) => {
+    if(_type){ this.setState({selectedChartType : _type}); }
+    else{ this.setState({selectedChartType : "candlestick"}); }
   }
 
   headerSubmitCallback = (_startDate, _endDate) => {
     this.setState({startDate : _startDate});
     this.setState({endDate : _endDate});
-    this.setState({details : []});
 
     if(this.state.selectedMenu !== ""){
       var tickerArr = this.state.tickers[this.state.selectedMenu];
@@ -72,30 +79,30 @@ export default class App extends Component{
         tickerArr.forEach(x => 
           this.getJsonData(x.name, _startDate, _endDate)
         );
-      }      
-    }      
+      }
+    }
   }
 
   createCandlecharts = () => {
-    if(this.state.details != null && this.state.details.length > 0)
+    if(this.state.details != null && this.state.details.length > 0){
       return this.state.details.map(item => {
         var _series = [{data : item.data}];
         var _options = candleStickOption;
         _options.title.text = item.shortName + ' (' + item.symbol + ')';
         _options.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
 
-        return (<CandleStickChart key={item.symbol} options={_options} series={_series}/>);
+        return <CandleStickChart key={item.symbol} options={_options} series={_series} type={this.state.selectedChartType}/>
       });
-    else
-      console.log("ticker detail list is null");
+    }
   }
   
   render(){
     return (
       <div>
         <Header callbackSubmit={ this.headerSubmitCallback }
-                callbackSelectNavItem={ this.headerSelectNavCallback }/>
-        <div class="square-FlexGrid">
+                callbackSelectNavItem={ this.headerSelectNavCallback }
+                callbackSelectChartType={ this.headerSelectChartTypeCallback }/>
+        <div className="square-FlexGrid">
           { this.createCandlecharts() }
         </div>
       </div>
