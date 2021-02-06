@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { Header } from './components/Header';
-import { CandleStickChart } from './components/CandleStickChart';
+import { ChartItem } from './components/ChartItem';
 import { option as candleStickOption } from './chartTemplate/candleStickOption.json'
 
 export default class App extends Component{
@@ -40,12 +40,7 @@ export default class App extends Component{
         ticker : _ticker
       }
     }).then(res => {
-      let idx = this.state.details.indexOf(x => x.symbol === res.data.symbol);
-      if(idx === -1)
-        this.setState({details : [...this.state.details, res.data]});
-      else
-        this.setState({details : [...this.state.details.slice(0, idx), res.data,
-                                  ...this.state.details.slice(idx + 1)]});
+      this.setState({details : [...this.state.details, res.data]});  
     }).catch(error => {
       console.log(error);
     });
@@ -65,13 +60,15 @@ export default class App extends Component{
   }
 
   headerSelectChartTypeCallback = (_type) => {
-    if(_type){ this.setState({selectedChartType : _type}); }
-    else{ this.setState({selectedChartType : "candlestick"}); }
+    if(_type){ 
+      this.setState({selectedChartType : _type}); 
+    }
   }
 
   headerSubmitCallback = (_startDate, _endDate) => {
     this.setState({startDate : _startDate});
     this.setState({endDate : _endDate});
+    this.setState({details : []});
 
     if(this.state.selectedMenu !== ""){
       var tickerArr = this.state.tickers[this.state.selectedMenu];
@@ -91,7 +88,7 @@ export default class App extends Component{
         _options.title.text = item.shortName + ' (' + item.symbol + ')';
         _options.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
 
-        return <CandleStickChart key={item.symbol} options={_options} series={_series} type={this.state.selectedChartType}/>
+        return <ChartItem key={item.symbol} options={_options} series={_series} type={item.chartType}/>
       });
     }
   }

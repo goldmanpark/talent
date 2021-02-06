@@ -1,7 +1,7 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 
-export class CandleStickChart extends React.Component {
+export class ChartItem extends React.Component {
   render = () => {
     return (
       <div className="square-FlexItem">

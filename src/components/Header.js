@@ -35,9 +35,8 @@ export class Header extends React.Component{
   }
 
   /***************** CHART TYPE EVENT *****************/
-  selectChartType = (type) => {
+  selectChartType = (type) =>
     this.props.callbackSelectChartType(type);
-  }
 
   /******************** FORM EVENT ********************/
   updateStartDate = (event) => 
