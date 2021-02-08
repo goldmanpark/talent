@@ -31,8 +31,10 @@ export class Header extends React.Component{
 
   /******************* NAVBAR EVENT *******************/
   selectNavItem = (menu) => {
-    this.setState({selectedMenu : menu});
-    this.props.callbackSelectNavItem(menu);
+    if(menu !== this.state.selectedMenu){
+      this.setState({selectedMenu : menu});
+      this.props.callbackSelectNavItem(menu);
+    }    
   }
 
   /******************** FORM EVENT ********************/
@@ -67,6 +69,7 @@ export class Header extends React.Component{
         <Navbar.Brand>Talent</Navbar.Brand>
         <Nav className="mr-auto" variant="pills" defaultActiveKey="market"
              onSelect={ this.selectNavItem }>
+          <Nav.Link eventKey="compare">Compare</Nav.Link>
           <Nav.Link eventKey="market">Market Index</Nav.Link>
           <Nav.Link eventKey="currency">Currency</Nav.Link>
           <NavDropdown title="Futures" id="basic-nav-dropdown">

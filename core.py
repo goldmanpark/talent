@@ -1,16 +1,39 @@
 import sys
-import yfinance as yf
-import json
 import os
+import json
 from datetime import datetime, timedelta
+import yfinance as yf
 
+############ GLOBAL AREA ############
 tickers = []
 jsonPath = os.getcwd() + "/rawData"
 infoPath = jsonPath + "/info"
 histPath = jsonPath + "/history"
-newStartDate = ''
-newEndDate = ''
 
+############ MAIN AREA ############
+try:    #validation
+    datetime.strptime(sys.argv[1])
+    datetime.strptime(sys.argv[2])
+except ValueError:
+    print("argv datetime error")
+    sys.exit(0)
+
+if len(sys.argv) == 3:
+    with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
+        tickers = json.load(jsonFile)
+    for x in tickers["tickerlist"]:
+        storeSingleDataOfTicker(sys.argv[1], sys.argv[2], x["name"])
+
+elif len(sys.argv) == 4:
+    storeSingleDataOfTicker(sys.argv[1], sys.argv[2], sys.argv[3])
+
+else:
+    print("argv error")
+    sys.exit(0)
+
+print("finished!")
+
+############ METHOD AREA ############
 def compareStringDate(dt1, dt2):
     # return -1 : date1 > date2
     # return 0 : date1 == date2
@@ -45,35 +68,24 @@ def getStoredHistoryData(name):
         print("json open exception : " + e)
         sys.exit(0)
 
-try:
-    newStartDate = sys.argv[1]
-    newEndDate = sys.argv[2]
-except Exception as e:
-    print("argv datetime exception : " + e)
-    sys.exit(0)
-
-try:
-    # 1. Get tickers
-    with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
-        tickers = json.load(jsonFile)
-
-    for x in tickers["tickerlist"]:
-        ticker = yf.Ticker(x["name"])
-        with open(os.path.join(infoPath, x["name"] + ".json"), "w") as jsonFile:
+def storeSingleDataOfTicker(newStartDate, newEndDate, tickerName):
+    '''
+        ---- history data store rule ----
+        1. load stored history data
+        2. compare stored startDate, endDate with argv[1], argv[2]
+        3. if there is blank between argv and already stored date,
+            run ticker.history to fill blank range
+            ex) argv[1] is before stored startDate, 
+                run ticker.history, ranging from argv[1] to stored startDate
+        4. json stored data should have no blank(except for holiday)
+    '''
+    try:
+        # store info json file
+        ticker = yf.Ticker(tickerName)
+        with open(os.path.join(infoPath, tickerName + ".json"), "w") as jsonFile:
             json.dump(ticker.info, jsonFile, indent=4)
 
-        '''
-            ---- history data store rule ----
-            1. load stored history data
-            2. compare stored startDate, endDate with argv[1], argv[2]
-            3. if there is blank between argv and already stored date,
-                run ticker.history to fill blank range
-                ex) argv[1] is before stored startDate, 
-                    run ticker.history, ranging from argv[1] to stored startDate
-            4. json stored data should have no blank(except for holiday)
-        '''
-
-        oldHistJson = getStoredHistoryData(x["name"])
+        oldHistJson = getStoredHistoryData(tickerName)
 
         # create new history json
         if oldHistJson is None:
@@ -81,7 +93,7 @@ try:
             histJson = json.loads(hist.to_json(orient="table"))
             histJson["schema"]["startDate"] = newStartDate
             histJson["schema"]["endDate"] = newEndDate
-            with open(os.path.join(histPath, x["name"] + ".json"), "w") as jsonFile:
+            with open(os.path.join(histPath, tickerName + ".json"), "w") as jsonFile:
                 json.dump(histJson, jsonFile, indent=4)
         
         # modify old history json or do nothing
@@ -104,11 +116,9 @@ try:
                 oldHistJson["schema"]["endDate"] = newEndDate
 
             if storeFlag == True:
-                with open(os.path.join(histPath, x["name"] + ".json"), "w") as jsonFile:
+                with open(os.path.join(histPath, tickerName + ".json"), "w") as jsonFile:
                     json.dump(oldHistJson, jsonFile, indent=4)
 
-except Exception as e:
-    print("yfinance or json exception : " + e)
-    sys.exit(0)
-
-print("finished!")
+    except Exception as e:
+        print("yfinance or json exception : " + e)
+        sys.exit(0)

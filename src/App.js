@@ -50,7 +50,7 @@ export default class App extends Component{
       this.setState({selectedMenu : _selectedMenu});
       this.setState({details : []});
     }
-    if(this.state.startDate && this.state.endDate){
+    if(this.state.startDate && this.state.endDate && _selectedMenu !== "compare"){
       var tickerArr = this.state.tickers[_selectedMenu];
       if(tickerArr){
         tickerArr.forEach(x => this.getJsonData(x.name, this.state.startDate, this.state.endDate));
