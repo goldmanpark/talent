@@ -21,7 +21,6 @@ export default class App extends Component{
   componentDidMount(){
     this.headerSubmitCallback = this.headerSubmitCallback.bind(this);
     this.headerSelectNavCallback = this.headerSelectNavCallback.bind(this);
-    this.headerSelectChartTypeCallback = this.headerSelectChartTypeCallback.bind(this);
 
     axios.get('/dashboard').then(res => {
       this.setState({tickers : res.data});
@@ -59,15 +58,10 @@ export default class App extends Component{
     }
   }
 
-  headerSelectChartTypeCallback = (_type) => {
-    if(_type){ 
-      this.setState({selectedChartType : _type}); 
-    }
-  }
-
-  headerSubmitCallback = (_startDate, _endDate) => {
+  headerSubmitCallback = (_startDate, _endDate, _type) => {
     this.setState({startDate : _startDate});
     this.setState({endDate : _endDate});
+    this.setState({selectedChartType : _type});
     this.setState({details : []});
 
     if(this.state.selectedMenu !== ""){
@@ -88,7 +82,8 @@ export default class App extends Component{
         _options.title.text = item.shortName + ' (' + item.symbol + ')';
         _options.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
 
-        return <ChartItem key={item.symbol} options={_options} series={_series} type={item.chartType}/>
+        return <ChartItem key={item.symbol} options={_options} series={_series} 
+                          type={this.state.selectedChartType}/>
       });
     }
   }
@@ -97,8 +92,7 @@ export default class App extends Component{
     return (
       <div>
         <Header callbackSubmit={ this.headerSubmitCallback }
-                callbackSelectNavItem={ this.headerSelectNavCallback }
-                callbackSelectChartType={ this.headerSelectChartTypeCallback }/>
+                callbackSelectNavItem={ this.headerSelectNavCallback }/>
         <div className="square-FlexGrid">
           { this.createCandlecharts() }
         </div>
