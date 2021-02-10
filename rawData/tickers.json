@@ -1,24 +1,109 @@
 {
-    "market" : [
-        { "symbol" : "^DJI" },
-        { "symbol" : "^GSPC" },
-        { "symbol" : "^IXIC" },
-        { "symbol" : "^NDX" },
-        { "symbol" : "^RUT" },
-        { "symbol" : "^VIX" },
-        { "symbol" : "^VXN" },
-        { "symbol" : "^KS11" },
-        { "symbol" : "^KQ11" },
-        { "symbol" : "^N225" },
-        { "symbol" : "000001.SS" },
-        { "symbol" : "^BSESN" }
+    "market": [
+        {
+            "symbol": "^DJI",
+            "shortName": "Dow Jones Industrial Average",
+            "quoteType": "INDEX",
+            "market": "us_market"
+        },
+        {
+            "symbol": "^GSPC",
+            "shortName": "S&P 500",
+            "quoteType": "INDEX",
+            "market": "us_market"
+        },
+        {
+            "symbol": "^IXIC",
+            "shortName": "NASDAQ Composite",
+            "quoteType": "INDEX",
+            "market": "us_market"
+        },
+        {
+            "symbol": "^NDX",
+            "shortName": "NASDAQ 100",
+            "quoteType": "INDEX",
+            "market": "us_market"
+        },
+        {
+            "symbol": "^RUT",
+            "shortName": "Russell 2000",
+            "quoteType": "INDEX",
+            "market": "us_market"
+        },
+        {
+            "symbol": "^VIX",
+            "shortName": "CBOE Volatility Index",
+            "quoteType": "INDEX",
+            "market": "us_market"
+        },
+        {
+            "symbol": "^VXN",
+            "shortName": "CBOE NASDAQ 100 Voltility",
+            "quoteType": "INDEX",
+            "market": "us_market"
+        },
+        {
+            "symbol": "^KS11",
+            "shortName": "KOSPI Composite Index",
+            "quoteType": "INDEX",
+            "market": "kr_market"
+        },
+        {
+            "symbol": "^KQ11",
+            "shortName": "Kosdaq Composite Index",
+            "quoteType": "INDEX",
+            "market": "kr_market"
+        },
+        {
+            "symbol": "^N225",
+            "shortName": "Nikkei 225",
+            "quoteType": "INDEX",
+            "market": "jp_market"
+        },
+        {
+            "symbol": "000001.SS",
+            "shortName": "SSE Composite Index",
+            "quoteType": "INDEX",
+            "market": "cn_market"
+        },
+        {
+            "symbol": "^BSESN",
+            "shortName": "S&P BSE SENSEX",
+            "quoteType": "INDEX",
+            "market": "in_market"
+        }
     ],
-    "currency" : [
-        { "symbol" : "DX-Y.NYB" },
-        { "symbol" : "KRW=X" },
-        { "symbol" : "EURUSD=X" },
-        { "symbol" : "JPY=X" },
-        { "symbol" : "CNY=X" }
+    "currency": [
+        {
+            "symbol": "DX-Y.NYB",
+            "shortName": "US Dollar/USDX - Index - Cash",
+            "quoteType": "INDEX",
+            "market": "us24_market"
+        },
+        {
+            "symbol": "KRW=X",
+            "shortName": "USD/KRW",
+            "quoteType": "CURRENCY",
+            "market": "ccy_market"
+        },
+        {
+            "symbol": "EURUSD=X",
+            "shortName": "EUR/USD",
+            "quoteType": "CURRENCY",
+            "market": "ccy_market"
+        },
+        {
+            "symbol": "JPY=X",
+            "shortName": "USD/JPY",
+            "quoteType": "CURRENCY",
+            "market": "ccy_market"
+        },
+        {
+            "symbol": "CNY=X",
+            "shortName": "USD/CNY",
+            "quoteType": "CURRENCY",
+            "market": "ccy_market"
+        }
     ],
-    "future" : []
+    "future": []
 }

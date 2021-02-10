@@ -10,33 +10,6 @@ jsonPath = os.getcwd() + "/rawData"
 infoPath = jsonPath + "/info"
 histPath = jsonPath + "/history"
 
-############ MAIN AREA ############
-try:    #validation
-    datetime.strptime(sys.argv[1])
-    datetime.strptime(sys.argv[2])
-except ValueError:
-    print("argv datetime error")
-    sys.exit(0)
-
-if len(sys.argv) == 1:
-    updateTickersJson()
-
-elif len(sys.argv) == 3:
-    with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
-        tickers = json.load(jsonFile)
-    for key in tickers:             # dictionary type
-        for item in tickers[key]:   # list type
-            storeSingleDataOfTicker(sys.argv[1], sys.argv[2], item["symbol"])
-
-elif len(sys.argv) == 4:
-    storeSingleDataOfTicker(sys.argv[1], sys.argv[2], sys.argv[3])
-
-else:
-    print("argv error")
-    sys.exit(0)
-
-print("finished!")
-
 ############ METHOD AREA ############
 def compareStringDate(dt1, dt2):
     # return -1 : date1 > date2
@@ -82,7 +55,7 @@ def updateTickersJson():
             item["quoteType"] = ticker.info["quoteType"]
             item["market"] = ticker.info["market"]
 
-    with open(os.path.join(infoPath, "tickers.json"), "w") as jsonFile:
+    with open(os.path.join(jsonPath, "tickers.json"), "w") as jsonFile:
             json.dump(tickers, jsonFile, indent=4)
 
 def storeSingleDataOfTicker(newStartDate, newEndDate, tickerSymbol):
@@ -139,3 +112,30 @@ def storeSingleDataOfTicker(newStartDate, newEndDate, tickerSymbol):
     except Exception as e:
         print("yfinance or json exception : " + e)
         sys.exit(0)
+
+############ MAIN AREA ############
+if len(sys.argv) == 1:
+    updateTickersJson()
+else:
+    try:    #validation
+        datetime.strptime(sys.argv[1], "%Y-%m-%d")
+        datetime.strptime(sys.argv[2], "%Y-%m-%d")
+    except ValueError:
+        print("argv datetime error")
+        sys.exit(0)
+
+    if len(sys.argv) == 3:    
+        with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
+            tickers = json.load(jsonFile)
+        for key in tickers:             # dictionary type
+            for item in tickers[key]:   # list type
+                storeSingleDataOfTicker(sys.argv[1], sys.argv[2], item["symbol"])
+
+    elif len(sys.argv) == 4:
+        storeSingleDataOfTicker(sys.argv[1], sys.argv[2], sys.argv[3])
+
+    else:
+        print("argv error")
+        sys.exit(0)
+
+print("finished!")

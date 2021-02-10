@@ -21,7 +21,7 @@ export default function CompareCharts(props){
   }
 
   const createDropdownItems = (items) =>
-    items.map(x => { return <NavDropdown.Item eventKey={x.symbol}>{x.symbol}</NavDropdown.Item>})
+    items.map(x => { return <NavDropdown.Item eventKey={x.symbol}>{x.shortName}</NavDropdown.Item>})
 
   return (
     <div>
