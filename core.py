@@ -18,11 +18,15 @@ except ValueError:
     print("argv datetime error")
     sys.exit(0)
 
-if len(sys.argv) == 3:
+if len(sys.argv) == 1:
+    updateTickersJson()
+
+elif len(sys.argv) == 3:
     with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
         tickers = json.load(jsonFile)
-    for x in tickers["tickerlist"]:
-        storeSingleDataOfTicker(sys.argv[1], sys.argv[2], x["name"])
+    for key in tickers:             # dictionary type
+        for item in tickers[key]:   # list type
+            storeSingleDataOfTicker(sys.argv[1], sys.argv[2], item["symbol"])
 
 elif len(sys.argv) == 4:
     storeSingleDataOfTicker(sys.argv[1], sys.argv[2], sys.argv[3])
@@ -57,9 +61,9 @@ def calcStringDate(strDate, day, opt):
         print("opt error : " + opt)
     return dt.strftime("%Y-%m-%d")
 
-def getStoredHistoryData(name):
+def getStoredHistoryData(tickerSymbol):
     try:
-        with open(os.path.join(histPath, name + ".json"), "r") as oldJsonFile:
+        with open(os.path.join(histPath, tickerSymbol + ".json"), "r") as oldJsonFile:
             oldHistJson = json.load(oldJsonFile)
             return oldHistJson
     except FileNotFoundError as e:
@@ -68,7 +72,20 @@ def getStoredHistoryData(name):
         print("json open exception : " + e)
         sys.exit(0)
 
-def storeSingleDataOfTicker(newStartDate, newEndDate, tickerName):
+def updateTickersJson():
+    with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
+        tickers = json.load(jsonFile)
+    for key in tickers:             # dictionary type
+        for item in tickers[key]:   # list type
+            ticker = yf.Ticker(item["symbol"])
+            item["shortName"] = ticker.info["shortName"]
+            item["quoteType"] = ticker.info["quoteType"]
+            item["market"] = ticker.info["market"]
+
+    with open(os.path.join(infoPath, "tickers.json"), "w") as jsonFile:
+            json.dump(tickers, jsonFile, indent=4)
+
+def storeSingleDataOfTicker(newStartDate, newEndDate, tickerSymbol):
     '''
         ---- history data store rule ----
         1. load stored history data
@@ -81,11 +98,11 @@ def storeSingleDataOfTicker(newStartDate, newEndDate, tickerName):
     '''
     try:
         # store info json file
-        ticker = yf.Ticker(tickerName)
-        with open(os.path.join(infoPath, tickerName + ".json"), "w") as jsonFile:
+        ticker = yf.Ticker(tickerSymbol)
+        with open(os.path.join(infoPath, tickerSymbol + ".json"), "w") as jsonFile:
             json.dump(ticker.info, jsonFile, indent=4)
 
-        oldHistJson = getStoredHistoryData(tickerName)
+        oldHistJson = getStoredHistoryData(tickerSymbol)
 
         # create new history json
         if oldHistJson is None:
@@ -93,7 +110,7 @@ def storeSingleDataOfTicker(newStartDate, newEndDate, tickerName):
             histJson = json.loads(hist.to_json(orient="table"))
             histJson["schema"]["startDate"] = newStartDate
             histJson["schema"]["endDate"] = newEndDate
-            with open(os.path.join(histPath, tickerName + ".json"), "w") as jsonFile:
+            with open(os.path.join(histPath, tickerSymbol + ".json"), "w") as jsonFile:
                 json.dump(histJson, jsonFile, indent=4)
         
         # modify old history json or do nothing
@@ -116,7 +133,7 @@ def storeSingleDataOfTicker(newStartDate, newEndDate, tickerName):
                 oldHistJson["schema"]["endDate"] = newEndDate
 
             if storeFlag == True:
-                with open(os.path.join(histPath, tickerName + ".json"), "w") as jsonFile:
+                with open(os.path.join(histPath, tickerSymbol + ".json"), "w") as jsonFile:
                     json.dump(oldHistJson, jsonFile, indent=4)
 
     except Exception as e:

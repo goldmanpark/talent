@@ -3,6 +3,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { Header } from './components/Header';
 import { ChartItem } from './components/ChartItem';
+import CompareCharts from './components/CompareCharts';
 import { option as candleStickOption } from './chartTemplate/candleStickOption.json'
 
 export default class App extends Component{
@@ -53,7 +54,7 @@ export default class App extends Component{
     if(this.state.startDate && this.state.endDate && _selectedMenu !== "compare"){
       var tickerArr = this.state.tickers[_selectedMenu];
       if(tickerArr){
-        tickerArr.forEach(x => this.getJsonData(x.name, this.state.startDate, this.state.endDate));
+        tickerArr.forEach(x => this.getJsonData(x.symbol, this.state.startDate, this.state.endDate));
       }
     }
   }
@@ -67,24 +68,27 @@ export default class App extends Component{
     if(this.state.selectedMenu !== ""){
       var tickerArr = this.state.tickers[this.state.selectedMenu];
       if(tickerArr !== null && tickerArr !== undefined){
-        tickerArr.forEach(x => 
-          this.getJsonData(x.name, _startDate, _endDate)
-        );
+        tickerArr.forEach(x => this.getJsonData(x.symbol, _startDate, _endDate));
       }
     }
   }
 
-  createCandlecharts = () => {
-    if(this.state.details != null && this.state.details.length > 0){
-      return this.state.details.map(item => {
-        var _series = [{data : item.data}];
-        var _options = candleStickOption;
-        _options.title.text = item.shortName + ' (' + item.symbol + ')';
-        _options.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
-
-        return <ChartItem key={item.symbol} options={_options} series={_series} 
-                          type={this.state.selectedChartType}/>
-      });
+  createBody = () => {
+    if(this.state.selectedMenu === "compare"){
+      return <CompareCharts tickers={this.state.tickers}/>
+    }
+    else{
+      if(this.state.details != null && this.state.details.length > 0){
+        return this.state.details.map(item => {
+          var _series = [{data : item.data}];
+          var _options = candleStickOption;
+          _options.title.text = item.shortName + ' (' + item.symbol + ')';
+          _options.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
+  
+          return <ChartItem key={item.symbol} options={_options} series={_series} 
+                            type={this.state.selectedChartType}/>
+        });
+      }
     }
   }
   
@@ -94,7 +98,7 @@ export default class App extends Component{
         <Header callbackSubmit={ this.headerSubmitCallback }
                 callbackSelectNavItem={ this.headerSelectNavCallback }/>
         <div className="square-FlexGrid">
-          { this.createCandlecharts() }
+          { this.createBody() }
         </div>
       </div>
     )

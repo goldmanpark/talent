@@ -1,24 +1,24 @@
 {
     "market" : [
-        { "name" : "^DJI" },
-        { "name" : "^GSPC" },
-        { "name" : "^IXIC" },
-        { "name" : "^NDX" },
-        { "name" : "^RUT" },
-        { "name" : "^VIX" },
-        { "name" : "^VXN" },
-        { "name" : "^KS11" },
-        { "name" : "^KQ11" },
-        { "name" : "^N225" },
-        { "name" : "000001.SS" },
-        { "name" : "^BSESN" }
+        { "symbol" : "^DJI" },
+        { "symbol" : "^GSPC" },
+        { "symbol" : "^IXIC" },
+        { "symbol" : "^NDX" },
+        { "symbol" : "^RUT" },
+        { "symbol" : "^VIX" },
+        { "symbol" : "^VXN" },
+        { "symbol" : "^KS11" },
+        { "symbol" : "^KQ11" },
+        { "symbol" : "^N225" },
+        { "symbol" : "000001.SS" },
+        { "symbol" : "^BSESN" }
     ],
     "currency" : [
-        { "name" : "DX-Y.NYB" },
-        { "name" : "KRW=X" },
-        { "name" : "EURUSD=X" },
-        { "name" : "JPY=X" },
-        { "name" : "CNY=X" }
+        { "symbol" : "DX-Y.NYB" },
+        { "symbol" : "KRW=X" },
+        { "symbol" : "EURUSD=X" },
+        { "symbol" : "JPY=X" },
+        { "symbol" : "CNY=X" }
     ],
     "future" : []
 }
