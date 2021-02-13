@@ -16,5 +16,16 @@
                 "enabled": true 
             }
         }
-    }    
+    },
+    "emptyOption": {
+        "chart":{            
+            "type": "line"
+        }        
+    },
+    "emptySeries": [
+        {
+            "name": "empty",
+            "data": []
+        }
+    ]
 }

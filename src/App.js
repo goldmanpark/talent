@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { Header } from './components/Header';
-import { ChartItem } from './components/ChartItem';
+import Chart from 'react-apexcharts';
+import Header from './components/Header';
 import CompareCharts from './components/CompareCharts';
-import { option as candleStickOption } from './chartTemplate/candleStickOption.json'
+import { option } from './chartTemplate/chartOptions.json'
 
-export default class App extends Component{
+export default class App extends React.Component{
   constructor(props){
     super(props);
     this.state = {
@@ -81,12 +81,12 @@ export default class App extends Component{
       if(this.state.details != null && this.state.details.length > 0){
         return this.state.details.map(item => {
           var _series = [{data : item.data}];
-          var _options = candleStickOption;
+          var _options = option;
           _options.title.text = item.shortName + ' (' + item.symbol + ')';
           _options.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
   
-          return <ChartItem key={item.symbol} options={_options} series={_series} 
-                            type={this.state.selectedChartType}/>
+          return <Chart className="square-FlexItem" key={item.symbol} options={_options} 
+                        series={_series} type={this.state.selectedChartType}/>
         });
       }
     }

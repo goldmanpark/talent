@@ -2,7 +2,7 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { Navbar, Nav, NavDropdown, DropdownButton, Dropdown } from 'react-bootstrap';
 
-export class Header extends React.Component{
+export default class Header extends React.Component{
   constructor(props){
     super(props);
     var today = dayjs();
