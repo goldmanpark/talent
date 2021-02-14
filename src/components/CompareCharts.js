@@ -4,8 +4,9 @@ import { Navbar, NavDropdown, Toast } from 'react-bootstrap';
 import { option, emptyOption, emptySeries } from '../chartTemplate/chartOptions.json'
 
 // using Hook
+// ISSUE : WTF is x[0]?
 export default function CompareCharts(props){
-  const [selectedTickers, selectTickers] = useState([]);
+  const [selectedTickerList, selectTickers] = useState([]);
   const [historyItems, getHistoryItem] = useState([]);
  
   const createDropdowns = () => {
@@ -14,7 +15,7 @@ export default function CompareCharts(props){
       var item = props.tickers[key];
       var dropdown = 
         <NavDropdown key={key} title={key} onSelect={onAdd}>
-          { item.map(x => { return <NavDropdown.Item eventKey={x.symbol}>{x.shortName}</NavDropdown.Item>}) }
+          { item.map(x => { return <NavDropdown.Item eventKey={[key, x.symbol]}>{x.shortName}</NavDropdown.Item>}) }
         </NavDropdown>
       dropdowns.push(dropdown);
     }
@@ -22,7 +23,12 @@ export default function CompareCharts(props){
   }
 
   const onAdd = (value) => {
-    selectTickers(selectTickers => [...selectTickers, value]);
+    let valueArr = value.split(",");
+    selectTickers([...selectedTickerList, props.tickers[valueArr[0]].filter(x => x.symbol === valueArr[1])]);
+  }
+
+  const onRemove = (value) => {
+    selectTickers(selectedTickerList.filter(x => x[0].symbol !== value));
   }
 
   const createChart = () => {
@@ -38,18 +44,18 @@ export default function CompareCharts(props){
   }
 
   const createToasts = () => {
-    if(selectedTickers.length !== 0){
-      return selectedTickers.map(x => {
+    if(selectedTickerList.length !== 0){
+      return selectedTickerList.map(x => {
         return (
-          <Toast.Header key={x.symbol}>
-            <strong>{ x }</strong>
-          </Toast.Header>
+          <Toast key={x[0].symbol} onClose={() => onRemove(x[0].symbol)}>
+            <Toast.Header>
+              <strong className="mr-auto">{ x[0].shortName }</strong>
+            </Toast.Header>
+          </Toast>
         )
       });
     }
-  }
-
-  
+  }  
 
   return (
     <div>
