@@ -20,7 +20,20 @@
     "emptyOption": {
         "chart":{            
             "type": "line"
-        }        
+        },
+        "title": { 
+            "text": "",
+            "align": "left" 
+        },
+        "xaxis": { 
+            "type": "category", 
+            "labels": {}
+        },
+        "yaxis": { 
+            "tooltip": { 
+                "enabled": true 
+            }
+        }
     },
     "emptySeries": [
         {
