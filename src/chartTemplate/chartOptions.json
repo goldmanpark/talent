@@ -17,12 +17,12 @@
             }
         }
     },
-    "emptyOption": {
+    "compareOption": {
         "chart":{            
             "type": "line"
         },
         "title": { 
-            "text": "",
+            "text": "Compare Chart",
             "align": "left" 
         },
         "xaxis": { 

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import Chart from 'react-apexcharts';
-import { Navbar, NavDropdown, Toast } from 'react-bootstrap';
-import { option, emptyOption, emptySeries } from '../chartTemplate/chartOptions.json'
+import { Navbar, NavDropdown, Button, ButtonGroup } from 'react-bootstrap';
+import { option, compareOption, emptySeries } from '../chartTemplate/chartOptions.json'
 
 // using Hook
-// ISSUE : WTF is x[0]?
 export default function CompareCharts(props){
   const [selectedTickerList, selectTickers] = useState([]);
-  const [historyItems, getHistoryItem] = useState([]);
+  const [historyData, changHistoryData] = useState([]);
  
   const createDropdowns = () => {
     var dropdowns = [];
@@ -22,15 +22,18 @@ export default function CompareCharts(props){
     return dropdowns;
   }
 
-  const createToasts = () => {
+  const createButtons = () => {
     if(selectedTickerList.length !== 0){
       return selectedTickerList.map(x => {
         return (
-          <Toast key={x.symbol} onClose={() => onRemoveToast(x.symbol)}>
-            <Toast.Header>
+          <ButtonGroup key={x.symbol} className="tickerButton">
+            <Button>
               <strong className="mr-auto">{ x.shortName }</strong>
-            </Toast.Header>
-          </Toast>)
+            </Button>
+            <Button onClick={() => onRemoveToast(x.symbol)}>
+              <strong className="mr-auto">X</strong>
+            </Button>
+          </ButtonGroup>)
       });
     }
   }
@@ -42,6 +45,7 @@ export default function CompareCharts(props){
       var item = props.tickers[menu].find(x => x.symbol === value);
       if(item !== undefined && !selectedTickerList.includes(item)){
         selectTickers([...selectedTickerList, item]);
+        getJsonData(value, '2021-01-01', '2021-02-01')
         break;
       }
     }
@@ -49,16 +53,35 @@ export default function CompareCharts(props){
 
   const onRemoveToast = (value) => {
     selectTickers(selectedTickerList.filter(x => x.symbol !== value));
+    changHistoryData(historyData.filter(x => x.symbol !== value))
+  }
+
+  const getJsonData = async (_ticker, _startDate, _endDate) => {
+    if(!_ticker)
+      return;
+    await axios.get('/dashboard/' + _ticker, {
+      params : {
+        startDate : _startDate,
+        endDate : _endDate,
+        ticker : _ticker
+      }
+    }).then(res => {
+      changHistoryData([...historyData, {
+        symbol : res.data.symbol,
+        name : res.data.shortName,
+        data : res.data.data
+      }]);
+    }).catch(error => {
+      console.log(error);
+    });
   }
 
   const createChart = () => {
-    if(historyItems.length === 0){
-      let _option = emptyOption;
-      let _series = emptySeries;
-      return <Chart className="compareChart" options={_option} series={_series}/>
+    if(historyData.length === 0){ 
+      return <Chart options={compareOption} series={emptySeries}/>
     }
     else{
-      
+      return <Chart options={compareOption} series={historyData}/>
     }
   }
 
@@ -67,12 +90,14 @@ export default function CompareCharts(props){
       <Navbar className="contents_header" bg="dark" exapnd="xl" variant="dark">
         { createDropdowns() }
       </Navbar>
-      <div className="square-FlexGrid">
-        { createChart() }
-      </div>
-      <div className="contents_footer">
-        { createToasts() }
-      </div>
-    </div>    
+      <div className="contents_body">
+        <div class="d-flex flex-wrap justify-content-center">
+          { createButtons() }
+        </div>
+        <div >
+          { createChart() }
+        </div>
+      </div>    
+    </div>  
   )
 }
