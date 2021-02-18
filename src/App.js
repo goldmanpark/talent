@@ -53,7 +53,7 @@ export default class App extends React.Component{
           </Nav>
         </Navbar>
 
-        <div>
+        <div className="app_body">
           { this.createBody() }
         </div>
       </div>

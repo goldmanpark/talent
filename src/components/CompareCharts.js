@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Chart from 'react-apexcharts';
 import { Navbar, NavDropdown, Button, ButtonGroup } from 'react-bootstrap';
-import { option, compareOption, emptySeries } from '../chartTemplate/chartOptions.json'
+import { compareOption, emptySeries } from '../chartTemplate/chartOptions.json'
 
 // using Hook
 export default function CompareCharts(props){
@@ -86,7 +86,7 @@ export default function CompareCharts(props){
   }
 
   return (
-    <div>
+    <div className="app_body">
       <Navbar className="contents_header" bg="dark" exapnd="xl" variant="dark">
         { createDropdowns() }
       </Navbar>
@@ -94,10 +94,10 @@ export default function CompareCharts(props){
         <div class="d-flex flex-wrap justify-content-center">
           { createButtons() }
         </div>
-        <div >
+        <div>
           { createChart() }
         </div>
-      </div>    
-    </div>  
+      </div>
+    </div>
   )
 }

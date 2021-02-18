@@ -18,8 +18,10 @@
         }
     },
     "compareOption": {
-        "chart":{            
-            "type": "line"
+        "chart":{
+            "toolbar":{
+                "show": false
+            }
         },
         "title": { 
             "text": "Compare Chart",

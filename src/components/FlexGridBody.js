@@ -26,8 +26,6 @@ export default class FlexGridBody extends React.Component{
     this.updateEndDate = this.updateEndDate.bind(this);
     this.selectChartType = this.selectChartType.bind(this);
     this.submitSearchCondition = this.submitSearchCondition.bind(this);
-
-    this.updateDetails();
   }
 
   componentDidUpdate(prevProps){
@@ -96,7 +94,7 @@ export default class FlexGridBody extends React.Component{
         _options.title.text = item.shortName + ' (' + item.symbol + ')';
         _options.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
 
-        return <Chart className="square-FlexItem" key={item.symbol} options={_options} 
+        return <Chart class="col-md-4 col-xs-10" key={item.symbol} options={_options} 
                       series={_series} type={this.state.selectedChartType}/>
       });
     }
@@ -121,7 +119,7 @@ export default class FlexGridBody extends React.Component{
           </form>
         </Navbar>        
 
-        <div className="square-FlexGrid">
+        <div class="d-flex flex-wrap justify-content-start">
           { this.createItems() }
         </div>
       </div>
