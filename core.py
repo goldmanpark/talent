@@ -7,7 +7,7 @@ import yfinance as yf
 ############ GLOBAL AREA ############
 tickers = []
 jsonPath = os.getcwd() + "/rawData"
-infoPath = jsonPath + "/info"
+statPath = jsonPath + "/statistics"
 histPath = jsonPath + "/history"
 
 ############ METHOD AREA ############
@@ -70,11 +70,7 @@ def storeSingleDataOfTicker(newStartDate, newEndDate, tickerSymbol):
         4. json stored data should have no blank(except for holiday)
     '''
     try:
-        # store info json file
         ticker = yf.Ticker(tickerSymbol)
-        with open(os.path.join(infoPath, tickerSymbol + ".json"), "w") as jsonFile:
-            json.dump(ticker.info, jsonFile, indent=4)
-
         oldHistJson = getStoredHistoryData(tickerSymbol)
 
         # create new history json
@@ -113,27 +109,39 @@ def storeSingleDataOfTicker(newStartDate, newEndDate, tickerSymbol):
         print("yfinance or json exception : " + e)
         sys.exit(0)
 
+def storeRateOfChangeData(startDate, endDate, tickerSymbol):
+    try:
+        hist = getStoredHistoryData(tickerSymbol)
+        if hist is None:
+            raise Exception("No record of ticker")
+    except Exception as e:
+        print(e)
+        sys.exit(0)
+
 ############ MAIN AREA ############
-if len(sys.argv) == 1:
+if len(sys.argv) == 1:  # refresh ticker list
     updateTickersJson()
 else:
-    try:    #validation
+    try:    # validation
         datetime.strptime(sys.argv[1], "%Y-%m-%d")
         datetime.strptime(sys.argv[2], "%Y-%m-%d")
     except ValueError:
         print("argv datetime error")
         sys.exit(0)
 
-    if len(sys.argv) == 3:    
+    if len(sys.argv) == 3:      # update all ticker history
         with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
             tickers = json.load(jsonFile)
         for key in tickers:             # dictionary type
             for item in tickers[key]:   # list type
                 storeSingleDataOfTicker(sys.argv[1], sys.argv[2], item["symbol"])
 
-    elif len(sys.argv) == 4:
+    elif len(sys.argv) == 4:    # update specific ticker history
         storeSingleDataOfTicker(sys.argv[1], sys.argv[2], sys.argv[3])
 
+    elif len(sys.argv) == 5 and sys.argv[4] == "stat":    # update specific ticker's statistics
+        storeRateOfChangeData(sys.argv[1], sys.argv[2], sys.argv[3])
+        
     else:
         print("argv error")
         sys.exit(0)

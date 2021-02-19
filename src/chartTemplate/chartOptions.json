@@ -35,6 +35,14 @@
             "tooltip": { 
                 "enabled": true 
             }
+        },
+        "stroke" : {
+            "show": true,
+            "curve": "smooth"
+        },
+        "markers":{
+            "size": 5,
+            "shape": "circle"
         }
     },
     "emptySeries": [

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import dayjs from 'dayjs';
 import axios from 'axios';
 import Chart from 'react-apexcharts';
 import { Navbar, NavDropdown, Button, ButtonGroup } from 'react-bootstrap';
@@ -8,6 +9,7 @@ import { compareOption, emptySeries } from '../chartTemplate/chartOptions.json'
 export default function CompareCharts(props){
   const [selectedTickerList, selectTickers] = useState([]);
   const [historyData, changHistoryData] = useState([]);
+  const colorArr = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
  
   const createDropdowns = () => {
     var dropdowns = [];
@@ -81,6 +83,7 @@ export default function CompareCharts(props){
       return <Chart options={compareOption} series={emptySeries}/>
     }
     else{
+      compareOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
       return <Chart options={compareOption} series={historyData}/>
     }
   }
@@ -90,11 +93,11 @@ export default function CompareCharts(props){
       <Navbar className="contents_header" bg="dark" exapnd="xl" variant="dark">
         { createDropdowns() }
       </Navbar>
-      <div className="contents_body">
-        <div class="d-flex flex-wrap justify-content-center">
+      <div className="contents_body row">
+        <div class="col-md-2 col-xs-12 d-flex flex-column align-items-start">
           { createButtons() }
         </div>
-        <div>
+        <div class="col-md-8 col-xs-12">
           { createChart() }
         </div>
       </div>
