@@ -11,15 +11,14 @@ export default class App extends React.Component{
       tickers : [], // list of tickers
       selectedMenu : "",
     }
+  }
 
-    axios.get('/dashboard').then(res => {
+  componentDidMount(){
+    axios.get('/home').then(res => {
       this.setState({tickers : res.data});
     }).catch(error =>{
       console.log(error);
     });
-  }
-
-  componentDidMount(){
     this.setState({selectedMenu : "market"});
   }
 

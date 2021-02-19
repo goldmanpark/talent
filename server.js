@@ -9,26 +9,39 @@ const tickers = JSON.parse(fs.readFileSync('./rawData/tickers.json', 'utf8'));
 app.use(express.json());
 app.listen(port, () => console.log("Backend server lives on " + port));
 
-app.get("/dashboard", (req, res) => {
+app.get("/home", (req, res) => {
   res.json(tickers);
 });
 
-app.get("/dashboard/:ticker", (req, res) => {
+app.get("/history/:ticker", (req, res) => {
   try {
     var startDate = req.query.startDate;
     var endDate = req.query.endDate;
-    var ticker = req.query.ticker;
-    fs.readFile('./rawData/info/' + ticker + '.json', 'utf8', (err1, infoJson) => {
-      if (err1)
-        throw err1;
-      fs.readFile('./rawData/history/' + ticker + '.json', 'utf8', (err2, histJson) => {
-        if (err2)
-          throw err2;
-        res.json({
-          'symbol': ticker,
-          'shortName': JSON.parse(infoJson).shortName,
-          'data': jsonHistoryTransfer(JSON.parse(histJson), startDate, endDate)
-        });
+    var symbol = req.query.ticker;
+    fs.readFile('./rawData/history/' + symbol + '.json', 'utf8', (err, histJson) => {
+      if (err)
+        throw err;
+      res.json({
+        'symbol': symbol,
+        'data': jsonHistoryTransfer(JSON.parse(histJson), startDate, endDate)
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get("/statistics/:ticker", (req, res) => {
+  try {
+    var startDate = req.query.startDate;
+    var endDate = req.query.endDate;
+    var symbol = req.query.ticker;
+    fs.readFile('./rawData/statistics/' + symbol + '.json', 'utf8', (err, statJson) => {
+      if (err)
+        throw err;
+      res.json({
+        'symbol': symbol,
+        'data': jsonHistoryTransfer(JSON.parse(statJson), startDate, endDate)
       });
     });
   } catch (error) {

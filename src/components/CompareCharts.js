@@ -61,7 +61,7 @@ export default function CompareCharts(props){
   const getJsonData = async (_ticker, _startDate, _endDate) => {
     if(!_ticker)
       return;
-    await axios.get('/dashboard/' + _ticker, {
+    await axios.get('/statisctics/' + _ticker, {
       params : {
         startDate : _startDate,
         endDate : _endDate,
