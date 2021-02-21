@@ -11,6 +11,14 @@ statPath = jsonPath + "/statistics"
 histPath = jsonPath + "/history"
 
 ############ METHOD AREA ############
+def validateDateArgv(startDate, endDate):
+    try:    # validation
+        datetime.strptime(startDate, "%Y-%m-%d")
+        datetime.strptime(endDate, "%Y-%m-%d")
+    except ValueError:
+        print("argv datetime error")
+        sys.exit(0)
+
 def compareStringDate(dt1, dt2):
     # return -1 : date1 > date2
     # return 0 : date1 == date2
@@ -58,7 +66,7 @@ def updateTickersJson():
     with open(os.path.join(jsonPath, "tickers.json"), "w") as jsonFile:
             json.dump(tickers, jsonFile, indent=4)
 
-def storeSingleDataOfTicker(newStartDate, newEndDate, tickerSymbol):
+def storeSingleDataOfTicker(tickerSymbol, newStartDate, newEndDate):
     '''
         ---- history data store rule ----
         1. load stored history data
@@ -109,7 +117,7 @@ def storeSingleDataOfTicker(newStartDate, newEndDate, tickerSymbol):
         print("yfinance or json exception : " + e)
         sys.exit(0)
 
-def storeRateOfChangeData(startDate, endDate, tickerSymbol):
+def storeRateOfChangeData(tickerSymbol, startDate, endDate):
     try:
         hist = getStoredHistoryData(tickerSymbol)
         if hist is None:
@@ -119,31 +127,43 @@ def storeRateOfChangeData(startDate, endDate, tickerSymbol):
         sys.exit(0)
 
 ############ MAIN AREA ############
-if len(sys.argv) == 1:  # refresh ticker list
-    updateTickersJson()
-else:
-    try:    # validation
-        datetime.strptime(sys.argv[1], "%Y-%m-%d")
-        datetime.strptime(sys.argv[2], "%Y-%m-%d")
-    except ValueError:
-        print("argv datetime error")
-        sys.exit(0)
+'''
+    COMMAND LIST as sys.argv
+    for admin(-a), call from console
+    -a -ticker                   : update tickers.json
+    -a -hist @startDate @endDate : update history of tickers.json as date range
+    -a -stat @startDate @endDate : update statistics of tickers.json as date range
 
-    if len(sys.argv) == 3:      # update all ticker history
+    for user(-u), call from server
+    -u -hist @ticker @startDate @endDate : update history of specific ticker as date range
+    -u -stat @ticker @startDate @endDate : update statistics of specific ticker as date range
+'''
+if len(sys.argv) == 1:
+    print("argv error")
+    sys.exit(0)
+
+if sys.argv[1] == "-a":
+    if sys.argv[2] == "-ticker":
+        updateTickersJson()
+    elif sys.argv[2] == "-hist":
+        validateDateArgv(sys.argv[3], sys.argv[4])
         with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
             tickers = json.load(jsonFile)
         for key in tickers:             # dictionary type
             for item in tickers[key]:   # list type
-                storeSingleDataOfTicker(sys.argv[1], sys.argv[2], item["symbol"])
+                storeSingleDataOfTicker(sys.argv[3], sys.argv[4], item["symbol"])
+    elif sys.argv[2] == "-stat":
+        validateDateArgv(sys.argv[3], sys.argv[4])
 
-    elif len(sys.argv) == 4:    # update specific ticker history
-        storeSingleDataOfTicker(sys.argv[1], sys.argv[2], sys.argv[3])
+elif sys.argv[1] == "-u":
+    validateDateArgv(sys.argv[4], sys.argv[5])
+    if sys.argv[2] == "-hist":
+        storeSingleDataOfTicker(sys.argv[3], sys.argv[4], sys.argv[5])
+    elif sys.argv[2] == "-stat":
+        storeRateOfChangeData(sys.argv[3], sys.argv[4], sys.argv[5])
 
-    elif len(sys.argv) == 5 and sys.argv[4] == "stat":    # update specific ticker's statistics
-        storeRateOfChangeData(sys.argv[1], sys.argv[2], sys.argv[3])
-        
-    else:
-        print("argv error")
-        sys.exit(0)
+else:
+    print("argv error")
+    sys.exit(0)
 
 print("finished!")
