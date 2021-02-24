@@ -3,14 +3,15 @@ import os
 import json
 from datetime import datetime, timedelta
 import yfinance as yf
+import pandas as pd
 
-############ GLOBAL AREA ############
+############################ GLOBAL AREA ############################
 tickers = []
 jsonPath = os.getcwd() + "/rawData"
 statPath = jsonPath + "/statistics"
 histPath = jsonPath + "/history"
 
-############ METHOD AREA ############
+############################ METHOD AREA ############################
 def validateDateArgv(startDate, endDate):
     try:    # validation
         datetime.strptime(startDate, "%Y-%m-%d")
@@ -45,13 +46,28 @@ def calcStringDate(strDate, day, opt):
 def getStoredHistoryData(tickerSymbol):
     try:
         with open(os.path.join(histPath, tickerSymbol + ".json"), "r") as oldJsonFile:
-            oldHistJson = json.load(oldJsonFile)
-            return oldHistJson
-    except FileNotFoundError as e:
+            return json.load(oldJsonFile)
+    except FileNotFoundError:
         return None
     except Exception as e:
         print("json open exception : " + e)
         sys.exit(0)
+
+def getStoredHistoryAsDataFrame(tickerSymbol):
+    try:
+        return pd.read_json(os.path.join(histPath, tickerSymbol + ".json"), orient="table")
+    except ValueError:
+        return None
+    except Exception as e:
+        print("json open exception : " + e)
+        sys.exit(0)
+
+def traverseTickersJson(func, startDate=None, endDate=None):
+    with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
+            tickers = json.load(jsonFile)
+    for key in tickers:             # dictionary type
+        for item in tickers[key]:   # list type
+            func(item["symbol"], startDate, endDate)
 
 def updateTickersJson():
     with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
@@ -119,14 +135,26 @@ def storeSingleDataOfTicker(tickerSymbol, newStartDate, newEndDate):
 
 def storeRateOfChangeData(tickerSymbol, startDate, endDate):
     try:
-        hist = getStoredHistoryData(tickerSymbol)
+        hist = getStoredHistoryAsDataFrame(tickerSymbol)
         if hist is None:
             raise Exception("No record of ticker")
+        else:
+            hist.reset_index(inplace=True)
+            df = hist.loc[(hist['Date'] >= startDate) & (hist['Date'] <= endDate)]
+            df["RateOfChange"] = df["Close"].pct_change().values
+            del df["Open"]
+            del df["High"]
+            del df["Low"]
+            del df["Dividends"]
+            del df["Stock Splits"]
+            del df["Volume"]
+            df.to_json(os.path.join(statPath, tickerSymbol + ".json"), orient="table", indent=4)
+            
     except Exception as e:
         print(e)
         sys.exit(0)
 
-############ MAIN AREA ############
+############################ MAIN AREA ############################
 '''
     COMMAND LIST as sys.argv
     for admin(-a), call from console
@@ -147,14 +175,17 @@ if sys.argv[1] == "-a":
         updateTickersJson()
     elif sys.argv[2] == "-hist":
         validateDateArgv(sys.argv[3], sys.argv[4])
+        traverseTickersJson(storeSingleDataOfTicker, sys.argv[3], sys.argv[4])
+        '''
         with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
             tickers = json.load(jsonFile)
         for key in tickers:             # dictionary type
             for item in tickers[key]:   # list type
                 storeSingleDataOfTicker(sys.argv[3], sys.argv[4], item["symbol"])
+        '''
     elif sys.argv[2] == "-stat":
         validateDateArgv(sys.argv[3], sys.argv[4])
-
+        traverseTickersJson(storeRateOfChangeData, sys.argv[3], sys.argv[4])
 elif sys.argv[1] == "-u":
     validateDateArgv(sys.argv[4], sys.argv[5])
     if sys.argv[2] == "-hist":
