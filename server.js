@@ -41,7 +41,7 @@ app.get("/statistics/:ticker", (req, res) => {
         throw err;
       res.json({
         'symbol': symbol,
-        'data': jsonHistoryTransfer(JSON.parse(statJson), startDate, endDate)
+        'data': jsonStatisticsTransfer(JSON.parse(statJson), startDate, endDate)
       });
     });
   } catch (error) {
@@ -56,6 +56,19 @@ function jsonHistoryTransfer(histJson, startDate, endDate) {
       tempJson.push({ // Send json as ApexChart can read
         x : item.Date,
         y : [item.Open.toFixed(4), item.High.toFixed(4), item.Low.toFixed(4), item.Close.toFixed(4)]
+      });
+    }
+  });
+  return tempJson;
+}
+
+function jsonStatisticsTransfer(statJson, startDate, endDate) {
+  var tempJson = [];
+  statJson.data.forEach(item => {
+    if(new Date(item.Date) > new Date(startDate) && new Date(item.Date) < new Date(endDate)){
+      tempJson.push({ // Send json as ApexChart can read
+        x : item.Date,
+        y : [item.RateOfChange]
       });
     }
   });

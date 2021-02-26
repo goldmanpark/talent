@@ -61,7 +61,7 @@ export default function CompareCharts(props){
   const getJsonData = async (_ticker, _startDate, _endDate) => {
     if(!_ticker)
       return;
-    await axios.get('/statisctics/' + _ticker, {
+    await axios.get('/statistics/' + _ticker, {
       params : {
         startDate : _startDate,
         endDate : _endDate,
@@ -70,7 +70,6 @@ export default function CompareCharts(props){
     }).then(res => {
       changHistoryData([...historyData, {
         symbol : res.data.symbol,
-        name : res.data.shortName,
         data : res.data.data
       }]);
     }).catch(error => {
