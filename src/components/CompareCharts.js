@@ -8,7 +8,7 @@ import { compareOption, emptySeries } from '../chartTemplate/chartOptions.json'
 // using Hook
 export default function CompareCharts(props){
   const [selectedTickerList, selectTickers] = useState([]);
-  const [historyData, changHistoryData] = useState([]);
+  const [historyData, changeHistoryData] = useState([]);
   const colorArr = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
  
   const createDropdowns = () => {
@@ -55,7 +55,7 @@ export default function CompareCharts(props){
 
   const onRemoveToast = (value) => {
     selectTickers(selectedTickerList.filter(x => x.symbol !== value));
-    changHistoryData(historyData.filter(x => x.symbol !== value))
+    changeHistoryData(historyData.filter(x => x.symbol !== value))
   }
 
   const getJsonData = async (_ticker, _startDate, _endDate) => {
@@ -68,7 +68,7 @@ export default function CompareCharts(props){
         ticker : _ticker
       }
     }).then(res => {
-      changHistoryData([...historyData, {
+      changeHistoryData([...historyData, {
         symbol : res.data.symbol,
         data : res.data.data
       }]);

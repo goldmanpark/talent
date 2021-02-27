@@ -23,7 +23,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["-a", "-stat", "2021-01-01", "2021-02-20"]
+            "args": ["-a", "-hist", "2021-01-01", "2021-02-27"]
         },
         {
             "type": "pwa-chrome",

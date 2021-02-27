@@ -26,6 +26,8 @@ export default class FlexGridBody extends React.Component{
     this.updateEndDate = this.updateEndDate.bind(this);
     this.selectChartType = this.selectChartType.bind(this);
     this.submitSearchCondition = this.submitSearchCondition.bind(this);
+
+    this.updateDetails();
   }
 
   componentDidUpdate(prevProps){
