@@ -55,7 +55,14 @@ def getStoredHistoryData(tickerSymbol):
 
 def getStoredHistoryAsDataFrame(tickerSymbol):
     try:
-        return pd.read_json(os.path.join(histPath, tickerSymbol + ".json"), orient="table")
+        hist = pd.read_json(os.path.join(histPath, tickerSymbol + ".json"), orient="table")
+        del hist["Open"]    #CLose, Date only
+        del hist["High"]
+        del hist["Low"]
+        del hist["Dividends"]
+        del hist["Stock Splits"]
+        del hist["Volume"]
+        return hist
     except ValueError:
         return None
     except Exception as e:
@@ -139,15 +146,8 @@ def storeRateOfChangeData(tickerSymbol, startDate, endDate):
         if hist is None:
             raise Exception("No record of ticker")
         else:
-            hist.reset_index(inplace=True)
-            df = hist.loc[(hist['Date'] >= startDate) & (hist['Date'] <= endDate)]
-            df["RateOfChange"] = df["Close"].pct_change().values
-            del df["Open"]
-            del df["High"]
-            del df["Low"]
-            del df["Dividends"]
-            del df["Stock Splits"]
-            del df["Volume"]
+            df = hist.loc[startDate : endDate]  #using DateTimeIndex
+            df["RateOfChange"] = df["Close"].pct_change().values            
             df.to_json(os.path.join(statPath, tickerSymbol + ".json"), orient="table", indent=4)
             
     except Exception as e:
@@ -176,13 +176,6 @@ if sys.argv[1] == "-a":
     elif sys.argv[2] == "-hist":
         validateDateArgv(sys.argv[3], sys.argv[4])
         traverseTickersJson(storeSingleDataOfTicker, sys.argv[3], sys.argv[4])
-        '''
-        with open(os.path.join(jsonPath, "tickers.json"), "r") as jsonFile:
-            tickers = json.load(jsonFile)
-        for key in tickers:             # dictionary type
-            for item in tickers[key]:   # list type
-                storeSingleDataOfTicker(sys.argv[3], sys.argv[4], item["symbol"])
-        '''
     elif sys.argv[2] == "-stat":
         validateDateArgv(sys.argv[3], sys.argv[4])
         traverseTickersJson(storeRateOfChangeData, sys.argv[3], sys.argv[4])

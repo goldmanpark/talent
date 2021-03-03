@@ -7,9 +7,15 @@ import { compareOption, emptySeries } from '../chartTemplate/chartOptions.json'
 
 // using Hook
 export default function CompareCharts(props){
+  var today = dayjs();
+  var ago = dayjs(today).subtract(1, 'month');
   const [selectedTickerList, selectTickers] = useState([]);
   const [historyData, changeHistoryData] = useState([]);
-  const colorArr = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
+  const [startDate, changeStartDate] = useState(ago.toISOString().substr(0,10));
+  const [endDate, changeEndDate] = useState(today.toISOString().substr(0,10));
+
+  compareOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
+  //const colorArr = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
  
   const createDropdowns = () => {
     var dropdowns = [];
@@ -47,7 +53,7 @@ export default function CompareCharts(props){
       var item = props.tickers[menu].find(x => x.symbol === value);
       if(item !== undefined && !selectedTickerList.includes(item)){
         selectTickers([...selectedTickerList, item]);
-        getJsonData(value, '2021-01-01', '2021-02-01')
+        getJsonData(value, startDate, endDate)
         break;
       }
     }
@@ -82,14 +88,22 @@ export default function CompareCharts(props){
       return <Chart options={compareOption} series={emptySeries}/>
     }
     else{
-      compareOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
+      
       return <Chart options={compareOption} series={historyData}/>
     }
   }
 
   return (
     <div className="app_body">
-      <Navbar className="contents_header" bg="dark" exapnd="xl" variant="dark">
+      <Navbar className="contents_header" bg="dark" variant="dark">
+        <form className="form-inline">
+          <input type="date" className="form-control m-sm-1 p-1" value={startDate} 
+                 onChange={(event) => {changeStartDate(event.target.value)}}/>
+          <span className="navbar-text mx-2"> ~ </span>
+          <input type="date" className="form-control m-sm-1 p-1" value={endDate} 
+                 onChange={(event) => {changeEndDate(event.target.value)}}/>
+        </form>
+        
         { createDropdowns() }
       </Navbar>
       <div className="contents_body row">
