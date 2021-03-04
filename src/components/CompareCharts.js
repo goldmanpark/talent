@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import Chart from 'react-apexcharts';
@@ -16,36 +16,14 @@ export default function CompareCharts(props){
 
   compareOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
   //const colorArr = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
- 
-  const createDropdowns = () => {
-    var dropdowns = [];
-    for(var key in props.tickers){
-      var item = props.tickers[key];
-      var dropdown = 
-        <NavDropdown key={key} title={key} onSelect={onAddToast}>
-          { item.map(x => { return <NavDropdown.Item eventKey={x.symbol}>{x.shortName}</NavDropdown.Item>}) }
-        </NavDropdown>
-      dropdowns.push(dropdown);
-    }
-    return dropdowns;
-  }
 
-  const createButtons = () => {
-    if(selectedTickerList.length !== 0){
-      return selectedTickerList.map(x => {
-        return (
-          <ButtonGroup key={x.symbol} className="tickerButton">
-            <Button>
-              <strong className="mr-auto">{ x.shortName }</strong>
-            </Button>
-            <Button onClick={() => onRemoveToast(x.symbol)}>
-              <strong className="mr-auto">X</strong>
-            </Button>
-          </ButtonGroup>)
-      });
-    }
-  }
-
+  useEffect(() => {
+    selectedTickerList.forEach(x => {
+      getJsonData(x.symbol, startDate, endDate) //infinite loop
+    });
+  });
+  
+  /******************** EVENT HANDLER ********************/
   const onAddToast = (value) => {
     if(selectedTickerList.length === 5)
       return;
@@ -64,6 +42,43 @@ export default function CompareCharts(props){
     changeHistoryData(historyData.filter(x => x.symbol !== value))
   }
 
+  /******************** HTML ELEMENT ********************/
+  const createDropdowns = () => {
+    var dropdowns = [];
+    for(var key in props.tickers){
+      var item = props.tickers[key];
+      var dropdown = 
+        <NavDropdown key={key} title={key} onSelect={onAddToast}>
+          { item.map(x => { return <NavDropdown.Item eventKey={x.symbol}>{x.shortName}</NavDropdown.Item>}) }
+        </NavDropdown>
+      dropdowns.push(dropdown);
+    }
+    return dropdowns;
+  }
+  
+  const createButtons = () => {
+    if(selectedTickerList.length !== 0){
+      return selectedTickerList.map(x => {
+        return (
+          <ButtonGroup key={x.symbol} className="tickerButton">
+            <Button>
+              <strong className="mr-auto">{ x.shortName }</strong>
+            </Button>
+            <Button onClick={() => onRemoveToast(x.symbol)}>
+              <strong className="mr-auto">X</strong>
+            </Button>
+          </ButtonGroup>)
+      });
+    }
+  }
+
+  const createChart = () => {
+    if(historyData.length === 0)
+      return <Chart options={compareOption} series={emptySeries}/>
+    else     
+      return <Chart options={compareOption} series={historyData}/>
+  }
+
   const getJsonData = async (_ticker, _startDate, _endDate) => {
     if(!_ticker)
       return;
@@ -74,23 +89,22 @@ export default function CompareCharts(props){
         ticker : _ticker
       }
     }).then(res => {
-      changeHistoryData([...historyData, {
-        symbol : res.data.symbol,
-        data : res.data.data
-      }]);
+      if(historyData.find(x => x.symbol === res.data.symbol)){
+        changeHistoryData(historyData.map(x => x.symbol === res.data.symbol ? 
+        {
+          symbol : res.data.symbol,
+          data : res.data.data
+        } : x));
+      }
+      else{
+        changeHistoryData([...historyData, {
+          symbol : res.data.symbol,
+          data : res.data.data
+        }]);
+      }      
     }).catch(error => {
       console.log(error);
     });
-  }
-
-  const createChart = () => {
-    if(historyData.length === 0){ 
-      return <Chart options={compareOption} series={emptySeries}/>
-    }
-    else{
-      
-      return <Chart options={compareOption} series={historyData}/>
-    }
   }
 
   return (
