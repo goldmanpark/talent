@@ -28,7 +28,7 @@
             "align": "left" 
         },
         "xaxis": { 
-            "type": "category", 
+            "type": "datetime", 
             "labels": {}
         },
         "yaxis": { 

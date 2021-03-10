@@ -68,7 +68,7 @@ function jsonStatisticsTransfer(statJson, startDate, endDate) {
     if(new Date(item.Date) > new Date(startDate) && new Date(item.Date) < new Date(endDate)){
       tempJson.push({ // Send json as ApexChart can read
         x : item.Date,
-        y : [item.RateOfChange]
+        y : [item.RateOfChange.toFixed(4)]
       });
     }
   });

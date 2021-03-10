@@ -10,18 +10,32 @@ export default function CompareCharts(props){
   var today = dayjs();
   var ago = dayjs(today).subtract(1, 'month');
   const [selectedTickerList, selectTickers] = useState([]);
-  const [historyData, changeHistoryData] = useState([]);
   const [startDate, changeStartDate] = useState(ago.toISOString().substr(0,10));
   const [endDate, changeEndDate] = useState(today.toISOString().substr(0,10));
+  const [historyData, changeHistoryData] = useState([]);
 
   compareOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
   //const colorArr = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
 
   useEffect(() => {
+    // remove 
+    changeHistoryData(historyData.filter(x => 
+      selectedTickerList.find(y => y.symbol === x.symbol)
+    ));
+
+    // add
     selectedTickerList.forEach(x => {
-      getJsonData(x.symbol, startDate, endDate) //infinite loop
-    });
-  });
+      if(!historyData.find(y => y.symbol === x.symbol)){
+        getJsonData(x.symbol);
+      }
+    }); // eslint-disable-next-line
+  }, [selectedTickerList]);
+  
+  useEffect(() => {
+    selectedTickerList.forEach(x => {
+      getJsonData(x.symbol);
+    }); // eslint-disable-next-line
+  }, [startDate, endDate]);
   
   /******************** EVENT HANDLER ********************/
   const onAddToast = (value) => {
@@ -31,7 +45,6 @@ export default function CompareCharts(props){
       var item = props.tickers[menu].find(x => x.symbol === value);
       if(item !== undefined && !selectedTickerList.includes(item)){
         selectTickers([...selectedTickerList, item]);
-        getJsonData(value, startDate, endDate)
         break;
       }
     }
@@ -39,7 +52,6 @@ export default function CompareCharts(props){
 
   const onRemoveToast = (value) => {
     selectTickers(selectedTickerList.filter(x => x.symbol !== value));
-    changeHistoryData(historyData.filter(x => x.symbol !== value))
   }
 
   /******************** HTML ELEMENT ********************/
@@ -79,13 +91,13 @@ export default function CompareCharts(props){
       return <Chart options={compareOption} series={historyData}/>
   }
 
-  const getJsonData = async (_ticker, _startDate, _endDate) => {
+  const getJsonData = async (_ticker) => {
     if(!_ticker)
       return;
     await axios.get('/statistics/' + _ticker, {
       params : {
-        startDate : _startDate,
-        endDate : _endDate,
+        startDate : startDate,
+        endDate : endDate,
         ticker : _ticker
       }
     }).then(res => {
@@ -93,15 +105,17 @@ export default function CompareCharts(props){
         changeHistoryData(historyData.map(x => x.symbol === res.data.symbol ? 
         {
           symbol : res.data.symbol,
+          name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
           data : res.data.data
         } : x));
       }
       else{
         changeHistoryData([...historyData, {
           symbol : res.data.symbol,
+          name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
           data : res.data.data
         }]);
-      }      
+      }
     }).catch(error => {
       console.log(error);
     });
