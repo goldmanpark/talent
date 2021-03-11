@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import axios from 'axios';
 import Chart from 'react-apexcharts';
 import { Navbar, NavDropdown, Button, ButtonGroup } from 'react-bootstrap';
-import { compareOption, emptySeries } from '../chartTemplate/chartOptions.json'
+import { multiOption, syncOption, emptySeries } from '../chartTemplate/chartOptions.json'
 
 // using Hook
 export default function CompareCharts(props){
@@ -12,34 +12,44 @@ export default function CompareCharts(props){
   const [selectedTickerList, selectTickers] = useState([]);
   const [startDate, changeStartDate] = useState(ago.toISOString().substr(0,10));
   const [endDate, changeEndDate] = useState(today.toISOString().substr(0,10));
-  const [historyData, changeHistoryData] = useState([]);
+  const [statisticsData, changeStatData] = useState([]);
+  const [historyData, changeHistData] = useState([]);
 
-  compareOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
+  multiOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') };
+  syncOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') };
+  const maxTickers = 3;
   //const colorArr = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
 
   useEffect(() => {
     // remove 
-    changeHistoryData(historyData.filter(x => 
+    changeStatData(statisticsData.filter(x => 
+      selectedTickerList.find(y => y.symbol === x.symbol)
+    ));
+    changeHistData(historyData.filter(x => 
       selectedTickerList.find(y => y.symbol === x.symbol)
     ));
 
     // add
     selectedTickerList.forEach(x => {
+      if(!statisticsData.find(y => y.symbol === x.symbol)){
+        getJsonStatData(x.symbol);
+      }
       if(!historyData.find(y => y.symbol === x.symbol)){
-        getJsonData(x.symbol);
+        getJsonHistData(x.symbol);
       }
     }); // eslint-disable-next-line
   }, [selectedTickerList]);
   
   useEffect(() => {
     selectedTickerList.forEach(x => {
-      getJsonData(x.symbol);
+      getJsonStatData(x.symbol);
+      getJsonHistData(x.symbol);
     }); // eslint-disable-next-line
   }, [startDate, endDate]);
   
   /******************** EVENT HANDLER ********************/
-  const onAddToast = (value) => {
-    if(selectedTickerList.length === 5)
+  const onAddButton = (value) => {
+    if(selectedTickerList.length === maxTickers)
       return;
     for(var menu in props.tickers){
       var item = props.tickers[menu].find(x => x.symbol === value);
@@ -50,7 +60,7 @@ export default function CompareCharts(props){
     }
   }
 
-  const onRemoveToast = (value) => {
+  const onRemoveButton = (value) => {
     selectTickers(selectedTickerList.filter(x => x.symbol !== value));
   }
 
@@ -60,7 +70,7 @@ export default function CompareCharts(props){
     for(var key in props.tickers){
       var item = props.tickers[key];
       var dropdown = 
-        <NavDropdown key={key} title={key} onSelect={onAddToast}>
+        <NavDropdown key={key} title={key} onSelect={onAddButton}>
           { item.map(x => { return <NavDropdown.Item eventKey={x.symbol}>{x.shortName}</NavDropdown.Item>}) }
         </NavDropdown>
       dropdowns.push(dropdown);
@@ -76,7 +86,7 @@ export default function CompareCharts(props){
             <Button>
               <strong className="mr-auto">{ x.shortName }</strong>
             </Button>
-            <Button onClick={() => onRemoveToast(x.symbol)}>
+            <Button onClick={() => onRemoveButton(x.symbol)}>
               <strong className="mr-auto">X</strong>
             </Button>
           </ButtonGroup>)
@@ -84,14 +94,25 @@ export default function CompareCharts(props){
     }
   }
 
-  const createChart = () => {
-    if(historyData.length === 0)
-      return <Chart options={compareOption} series={emptySeries}/>
+  const createMultiChart = () => {
+    if(statisticsData.length === 0)
+      return <Chart options={multiOption} series={emptySeries}/>
     else     
-      return <Chart options={compareOption} series={historyData}/>
+      return <Chart options={multiOption} series={statisticsData}/>
   }
 
-  const getJsonData = async (_ticker) => {
+  const createSyncChart = () => {
+    if(statisticsData.length === 0)
+      return <Chart options={syncOption} series={emptySeries}/>
+    else{
+      return historyData.map(x => {
+        return <Chart key={x.symbol} options={syncOption} series={[{data: x.data}]} 
+                type="candlestick" height="235"/>
+      });
+    }      
+  }
+
+  const getJsonStatData = async (_ticker) => {
     if(!_ticker)
       return;
     await axios.get('/statistics/' + _ticker, {
@@ -101,8 +122,8 @@ export default function CompareCharts(props){
         ticker : _ticker
       }
     }).then(res => {
-      if(historyData.find(x => x.symbol === res.data.symbol)){
-        changeHistoryData(historyData.map(x => x.symbol === res.data.symbol ? 
+      if(statisticsData.find(x => x.symbol === res.data.symbol)){
+        changeStatData(statisticsData.map(x => x.symbol === res.data.symbol ? 
         {
           symbol : res.data.symbol,
           name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
@@ -110,7 +131,37 @@ export default function CompareCharts(props){
         } : x));
       }
       else{
-        changeHistoryData([...historyData, {
+        changeStatData([...statisticsData, {
+          symbol : res.data.symbol,
+          name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
+          data : res.data.data
+        }]);
+      }
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+
+  const getJsonHistData = async (_ticker) => {
+    if(!_ticker)
+      return;
+    await axios.get('/history/' + _ticker, {
+      params : {
+        startDate : startDate,
+        endDate : endDate,
+        ticker : _ticker
+      }
+    }).then(res => {
+      if(historyData.find(x => x.symbol === res.data.symbol)){
+        changeHistData(historyData.map(x => x.symbol === res.data.symbol ? 
+        {
+          symbol : res.data.symbol,
+          name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
+          data : res.data.data
+        } : x));
+      }
+      else{
+        changeHistData([...historyData, {
           symbol : res.data.symbol,
           name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
           data : res.data.data
@@ -134,13 +185,18 @@ export default function CompareCharts(props){
         
         { createDropdowns() }
       </Navbar>
-      <div className="contents_body row">
-        <div class="col-md-2 col-xs-12 d-flex flex-column align-items-start">
+      <div className="contents_body">
+        <div class="d-flex justify-content-center">
           { createButtons() }
         </div>
-        <div class="col-md-8 col-xs-12">
-          { createChart() }
-        </div>
+        <div class="row">
+          <div class="col-md-7 col-xs-12">
+            { createMultiChart() }
+          </div>
+          <div class="col-md-5 col-xs-12 d-flex flex-column">
+            { createSyncChart() }
+          </div>
+        </div>        
       </div>
     </div>
   )

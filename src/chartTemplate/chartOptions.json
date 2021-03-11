@@ -17,14 +17,14 @@
             }
         }
     },
-    "compareOption": {
+    "multiOption": {
         "chart":{
             "toolbar":{
                 "show": false
             }
         },
         "title": { 
-            "text": "Compare Chart",
+            "text": "Multi Chart",
             "align": "left" 
         },
         "xaxis": { 
@@ -43,6 +43,38 @@
         "markers":{
             "size": 5,
             "shape": "circle"
+        },
+        "annotations":{
+            "yaxis":[{
+                "y": 0,
+                "borderWidth": 3,
+                "strokeDashArray": 2,
+                "borderColor": "#FF0000",
+                "label":{
+                    "text": "0"
+                }
+            }]
+        }
+    },
+    "syncOption": {
+        "chart": { 
+            "type": "candlestick",
+            "toolbar":{
+                "show": false
+            }
+        },
+        "title": { 
+            "text": "",
+            "align": "left" 
+        },
+        "xaxis": { 
+            "type": "category", 
+            "labels": {}
+        },
+        "yaxis": { 
+            "tooltip": { 
+                "enabled": true 
+            }
         }
     },
     "emptySeries": [
