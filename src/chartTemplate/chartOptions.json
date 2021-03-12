@@ -24,7 +24,7 @@
             }
         },
         "title": { 
-            "text": "Multi Chart",
+            "text": "Rate of Change",
             "align": "left" 
         },
         "xaxis": { 

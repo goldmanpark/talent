@@ -43,16 +43,6 @@ def calcStringDate(strDate, day, opt):
         print("opt error : " + opt)
     return dt.strftime("%Y-%m-%d")
 
-def getStoredHistoryData(tickerSymbol):
-    try:
-        with open(os.path.join(histPath, tickerSymbol + ".json"), "r") as oldJsonFile:
-            return json.load(oldJsonFile)
-    except FileNotFoundError:
-        return None
-    except Exception as e:
-        print("json open exception : " + e)
-        sys.exit(0)
-
 def getStoredHistoryAsDataFrame(tickerSymbol):
     try:
         return pd.read_json(os.path.join(histPath, tickerSymbol + ".json"), orient="table")
@@ -81,57 +71,6 @@ def updateTickersJson():
 
     with open(os.path.join(jsonPath, "tickers.json"), "w") as jsonFile:
             json.dump(tickers, jsonFile, indent=4)
-
-def storeSingleDataOfTicker(tickerSymbol, newStartDate, newEndDate):
-    '''
-        ---- history data store rule ----
-        1. load stored history data
-        2. compare stored startDate, endDate with argv[1], argv[2]
-        3. if there is blank between argv and already stored date,
-            run ticker.history to fill blank range
-            ex) argv[1] is before stored startDate, 
-                run ticker.history, ranging from argv[1] to stored startDate
-        4. json stored data should have no blank(except for holiday)
-    '''
-    try:
-        ticker = yf.Ticker(tickerSymbol)
-        oldHistJson = getStoredHistoryData(tickerSymbol)
-
-        # create new history json
-        if oldHistJson is None:
-            hist = ticker.history(start=newStartDate, end=newEndDate, interval="1d")
-            histJson = json.loads(hist.to_json(orient="table"))
-            histJson["schema"]["startDate"] = newStartDate
-            histJson["schema"]["endDate"] = newEndDate
-            with open(os.path.join(histPath, tickerSymbol + ".json"), "w") as jsonFile:
-                json.dump(histJson, jsonFile, indent=4)
-        
-        # modify old history json or do nothing
-        else:
-            oldStartDate = oldHistJson["schema"]["startDate"]
-            oldEndDate = oldHistJson["schema"]["endDate"]
-            storeFlag = False
-
-            if compareStringDate(newStartDate, oldStartDate) == 1:
-                storeFlag = True
-                hist = ticker.history(start=newStartDate, end=calcStringDate(oldStartDate, 1, 'sub'), interval="1d")
-                histJson = json.loads(hist.to_json(orient="table"))
-                oldHistJson["data"] = histJson["data"] + oldHistJson["data"]
-                oldHistJson["schema"]["startDate"] = newStartDate
-            if compareStringDate(oldEndDate, newEndDate) == 1:
-                storeFlag = True
-                hist = ticker.history(start=oldEndDate, end=calcStringDate(newEndDate, 1, 'add'), interval="1d")
-                histJson = json.loads(hist.to_json(orient="table"))
-                oldHistJson["data"] = oldHistJson["data"] + histJson["data"]
-                oldHistJson["schema"]["endDate"] = newEndDate
-
-            if storeFlag == True:
-                with open(os.path.join(histPath, tickerSymbol + ".json"), "w") as jsonFile:
-                    json.dump(oldHistJson, jsonFile, indent=4)
-
-    except Exception as e:
-        print("yfinance or json exception : " + e)
-        sys.exit(0)
 
 def storeHistoryData(tickerSymbol, startDate, endDate):
     try:
@@ -213,7 +152,7 @@ if sys.argv[1] == "-a":
 elif sys.argv[1] == "-u":
     validateDateArgv(sys.argv[4], sys.argv[5])
     if sys.argv[2] == "-hist":
-        storeSingleDataOfTicker(sys.argv[3], sys.argv[4], sys.argv[5])
+        storeHistoryData(sys.argv[3], sys.argv[4], sys.argv[5])
     elif sys.argv[2] == "-stat":
         storeRateOfChangeData(sys.argv[3], sys.argv[4], sys.argv[5])
 
