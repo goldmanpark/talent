@@ -55,14 +55,7 @@ def getStoredHistoryData(tickerSymbol):
 
 def getStoredHistoryAsDataFrame(tickerSymbol):
     try:
-        hist = pd.read_json(os.path.join(histPath, tickerSymbol + ".json"), orient="table")
-        del hist["Open"]    #CLose, Date only
-        del hist["High"]
-        del hist["Low"]
-        del hist["Dividends"]
-        del hist["Stock Splits"]
-        del hist["Volume"]
-        return hist
+        return pd.read_json(os.path.join(histPath, tickerSymbol + ".json"), orient="table")
     except ValueError:
         return None
     except Exception as e:
@@ -140,6 +133,38 @@ def storeSingleDataOfTicker(tickerSymbol, newStartDate, newEndDate):
         print("yfinance or json exception : " + e)
         sys.exit(0)
 
+def storeHistoryData(tickerSymbol, startDate, endDate):
+    try:
+        ticker = yf.Ticker(tickerSymbol)
+        oldHist = getStoredHistoryAsDataFrame(tickerSymbol)
+
+        if oldHist is None:
+            df = ticker.history(start=startDate, end=endDate, interval="1d")
+            df.to_json(os.path.join(histPath, tickerSymbol + ".json"), orient="table", indent=4)
+        
+        else:
+            oldStartDate = oldHist["Date"].min()
+            oldEndDate = oldHist["Date"].max()
+            storeFlag = False
+            newHist = {}
+
+            if compareStringDate(startDate, oldStartDate) == 1:
+                storeFlag = True
+                df = ticker.history(start=startDate, end=oldStartDate, interval="1d")
+                newHist = pd.concat(oldHist, df)
+
+            if compareStringDate(oldEndDate, endDate) == 1:
+                storeFlag = True
+                df = ticker.history(start=oldEndDate, end=endDate, interval="1d")
+                newHist = pd.concat(oldHist, df)
+
+            if storeFlag == True:
+                newHist.drop_duplicates(["Date"], inplace=True)
+                newHist.to_json(os.path.join(histPath, tickerSymbol + ".json"), orient="table", indent=4)
+    except Exception as e:
+        print(e)
+        sys.exit(0)
+
 def storeRateOfChangeData(tickerSymbol, startDate, endDate):
     try:
         hist = getStoredHistoryAsDataFrame(tickerSymbol)
@@ -147,7 +172,13 @@ def storeRateOfChangeData(tickerSymbol, startDate, endDate):
             raise Exception("No record of ticker")
         else:
             df = hist.loc[startDate : endDate]  #using DateTimeIndex
-            df["RateOfChange"] = df["Close"].pct_change().values            
+            df["RateOfChange"] = df["Close"].pct_change().values
+            del df["Open"]    #CLose, Date only
+            del df["High"]
+            del df["Low"]
+            del df["Dividends"]
+            del df["Stock Splits"]
+            del df["Volume"]            
             df.to_json(os.path.join(statPath, tickerSymbol + ".json"), orient="table", indent=4)
             
     except Exception as e:
@@ -175,7 +206,7 @@ if sys.argv[1] == "-a":
         updateTickersJson()
     elif sys.argv[2] == "-hist":
         validateDateArgv(sys.argv[3], sys.argv[4])
-        traverseTickersJson(storeSingleDataOfTicker, sys.argv[3], sys.argv[4])
+        traverseTickersJson(storeHistoryData, sys.argv[3], sys.argv[4])
     elif sys.argv[2] == "-stat":
         validateDateArgv(sys.argv[3], sys.argv[4])
         traverseTickersJson(storeRateOfChangeData, sys.argv[3], sys.argv[4])

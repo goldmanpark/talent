@@ -106,8 +106,9 @@ export default function CompareCharts(props){
       return <Chart options={syncOption} series={emptySeries}/>
     else{
       return historyData.map(x => {
+        syncOption.title.text = x.name;
         return <Chart key={x.symbol} options={syncOption} series={[{data: x.data}]} 
-                type="candlestick" height="235"/>
+                type="candlestick" height="230"/>
       });
     }      
   }
