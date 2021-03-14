@@ -19,7 +19,7 @@ export default class App extends React.Component{
     }).catch(error =>{
       console.log(error);
     });
-    this.setState({selectedMenu : "market"});
+    this.setState({selectedMenu : "compare"});
   }
 
   selectNavItem = (_selectedMenu) =>
@@ -39,7 +39,7 @@ export default class App extends React.Component{
       <div>
         <Navbar className="app_header" bg="dark" exapnd="lg" variant="dark">
           <Navbar.Brand>Talent</Navbar.Brand>
-          <Nav className="mr-auto" variant="pills" defaultActiveKey="market"
+          <Nav className="mr-auto" variant="pills" defaultActiveKey="compare"
               onSelect={ this.selectNavItem }>
             <Nav.Link eventKey="compare">Compare</Nav.Link>
             <Nav.Link eventKey="market">Market Index</Nav.Link>
