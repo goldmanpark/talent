@@ -27,7 +27,8 @@ app.get("/history/:ticker", (req, res) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.name);
+     console.log(error.message);
   }
 });
 
@@ -45,7 +46,8 @@ app.get("/statistics/:ticker", (req, res) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.name);
+    console.log(error.message);
   }
 });
 

@@ -58,7 +58,8 @@ export default class FlexGridBody extends React.Component{
       res.data.shortName = this.props.tickers.find(x => x.symbol === _ticker).shortName
       this.setState({details : [...this.state.details, res.data]});  
     }).catch(error => {
-      console.log(error);
+      console.log(error.name);
+      console.log(error.message);
     });
   }
 
@@ -97,7 +98,7 @@ export default class FlexGridBody extends React.Component{
         _options.title.text = item.shortName + ' (' + item.symbol + ')';
         _options.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') }
 
-        return <Chart class="col-md-4 col-xs-10" key={item.symbol} options={_options} 
+        return <Chart className="col-md-4 col-xs-10" key={item.symbol} options={_options} 
                       series={_series} type={this.state.selectedChartType}/>
       });
     }
@@ -122,7 +123,7 @@ export default class FlexGridBody extends React.Component{
           </form>
         </Navbar>        
 
-        <div class="d-flex flex-wrap justify-content-start">
+        <div className="d-flex flex-wrap justify-content-start">
           { this.createItems() }
         </div>
       </div>

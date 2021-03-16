@@ -71,7 +71,7 @@ export default function CompareCharts(props){
       var item = props.tickers[key];
       var dropdown = 
         <NavDropdown key={key} title={key} onSelect={onAddButton}>
-          { item.map(x => { return <NavDropdown.Item eventKey={x.symbol}>{x.shortName}</NavDropdown.Item>}) }
+          { item.map(x => { return <NavDropdown.Item key={x.symbol} eventKey={x.symbol}>{x.shortName}</NavDropdown.Item>}) }
         </NavDropdown>
       dropdowns.push(dropdown);
     }
@@ -139,7 +139,8 @@ export default function CompareCharts(props){
         }]);
       }
     }).catch(error => {
-      console.log(error);
+      console.log(error.name);
+      console.log(error.message);
     });
   }
 
@@ -169,7 +170,8 @@ export default function CompareCharts(props){
         }]);
       }
     }).catch(error => {
-      console.log(error);
+      console.log(error.name);
+      console.log(error.message);
     });
   }
 
@@ -187,14 +189,14 @@ export default function CompareCharts(props){
         { createDropdowns() }
       </Navbar>
       <div className="contents_body">
-        <div class="d-flex justify-content-center">
+        <div className="d-flex justify-content-center">
           { createButtons() }
         </div>
-        <div class="row">
-          <div class="col-md-7 col-xs-12">
+        <div className="row">
+          <div className="col-md-7 col-xs-12">
             { createMultiChart() }
           </div>
-          <div class="col-md-5 col-xs-12 d-flex flex-column">
+          <div className="col-md-5 col-xs-12 d-flex flex-column">
             { createSyncChart() }
           </div>
         </div>        
