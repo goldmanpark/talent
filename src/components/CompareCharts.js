@@ -64,6 +64,20 @@ export default function CompareCharts(props){
     selectTickers(selectedTickerList.filter(x => x.symbol !== value));
   }
 
+  const onChangeStartDate = (event) =>{
+    if(dayjs(endDate).diff(event.target.value, 'day') < 0)
+      alert("date error");
+    else
+      changeStartDate(event.target.value);
+  }
+
+  const onChangeEndDate = (event) =>{
+    if(dayjs(event.target.value).diff(startDate, 'day') < 0)
+      alert("date error");
+    else
+      changeEndDate(event.target.value); 
+  }
+
   /******************** HTML ELEMENT ********************/
   const createDropdowns = () => {
     var dropdowns = [];
@@ -180,10 +194,10 @@ export default function CompareCharts(props){
       <Navbar className="contents_header" bg="dark" variant="dark">
         <form className="form-inline">
           <input type="date" className="form-control m-sm-1 p-1" value={startDate} 
-                 onChange={(event) => {changeStartDate(event.target.value)}}/>
+                 onChange={ onChangeStartDate }/>
           <span className="navbar-text mx-2"> ~ </span>
           <input type="date" className="form-control m-sm-1 p-1" value={endDate} 
-                 onChange={(event) => {changeEndDate(event.target.value)}}/>
+                 onChange={ onChangeEndDate }/>
         </form>
         
         { createDropdowns() }
