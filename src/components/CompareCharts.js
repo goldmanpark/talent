@@ -18,7 +18,8 @@ export default function CompareCharts(props){
   multiOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') };
   syncOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') };
   const maxTickers = 3;
-  //const colorArr = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
+  const statRoute = "/statistics/";
+  const histRoute = "/history/";
 
   useEffect(() => {
     // remove 
@@ -30,21 +31,29 @@ export default function CompareCharts(props){
     ));
 
     // add
-    selectedTickerList.forEach(x => {
+    selectedTickerList.forEach(async x => {
       if(!statisticsData.find(y => y.symbol === x.symbol)){
-        getJsonStatData(x.symbol);
+        changeStatData([...statisticsData, await getJsonData(statRoute, x.symbol)]);
       }
       if(!historyData.find(y => y.symbol === x.symbol)){
-        getJsonHistData(x.symbol);
+        changeHistData([...historyData, await getJsonData(histRoute, x.symbol)]);
       }
     }); // eslint-disable-next-line
   }, [selectedTickerList]);
   
   useEffect(() => {
-    selectedTickerList.forEach(x => {
-      getJsonStatData(x.symbol);
-      getJsonHistData(x.symbol);
-    }); // eslint-disable-next-line
+    const asyncFunc = async () => {
+      let tempStat = [];
+      let tempHist = [];
+      for await (let x of selectedTickerList){
+        tempStat.push(await getJsonData(statRoute, x.symbol));
+        tempHist.push(await getJsonData(histRoute, x.symbol));
+      }
+      changeStatData(tempStat);
+      changeHistData(tempHist);
+    }
+    asyncFunc();    
+    // eslint-disable-next-line
   }, [startDate, endDate]);
   
   /******************** EVENT HANDLER ********************/
@@ -127,68 +136,29 @@ export default function CompareCharts(props){
     }      
   }
 
-  const getJsonStatData = async (_ticker) => {
-    if(!_ticker)
-      return;
-    await axios.get('/statistics/' + _ticker, {
+  /******************** REST METHOD ********************/
+  const getJsonData = async (_route, _ticker) => {
+    if(!_route || !_ticker)
+      return null;
+    const res = await axios.get(_route + _ticker, {
       params : {
         startDate : startDate,
         endDate : endDate,
         ticker : _ticker
       }
-    }).then(res => {
-      if(statisticsData.find(x => x.symbol === res.data.symbol)){
-        changeStatData(statisticsData.map(x => x.symbol === res.data.symbol ? 
-        {
-          symbol : res.data.symbol,
-          name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
-          data : res.data.data
-        } : x));
-      }
-      else{
-        changeStatData([...statisticsData, {
-          symbol : res.data.symbol,
-          name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
-          data : res.data.data
-        }]);
-      }
     }).catch(error => {
       console.log(error.name);
       console.log(error.message);
     });
+
+    return {
+      symbol : res.data.symbol,
+      name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
+      data : res.data.data
+    };
   }
 
-  const getJsonHistData = async (_ticker) => {
-    if(!_ticker)
-      return;
-    await axios.get('/history/' + _ticker, {
-      params : {
-        startDate : startDate,
-        endDate : endDate,
-        ticker : _ticker
-      }
-    }).then(res => {
-      if(historyData.find(x => x.symbol === res.data.symbol)){
-        changeHistData(historyData.map(x => x.symbol === res.data.symbol ? 
-        {
-          symbol : res.data.symbol,
-          name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
-          data : res.data.data
-        } : x));
-      }
-      else{
-        changeHistData([...historyData, {
-          symbol : res.data.symbol,
-          name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
-          data : res.data.data
-        }]);
-      }
-    }).catch(error => {
-      console.log(error.name);
-      console.log(error.message);
-    });
-  }
-
+  /******************** JSX RENDER ********************/
   return (
     <div className="app_body">
       <Navbar className="contents_header" bg="dark" variant="dark">

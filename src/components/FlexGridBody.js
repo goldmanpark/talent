@@ -78,15 +78,10 @@ export default class FlexGridBody extends React.Component{
 
   submitSearchCondition = (event) => {
     event.preventDefault();
-    let date = dayjs(this.state.endDate);
-    let result = date.diff(this.state.startDate, 'day');
-    
-    if(result < 0){
+    if(dayjs(this.state.endDate).diff(this.state.startDate, 'day') < 0)
       alert("date error");
-    }      
-    else {
-      this.updateDetails();  
-    }      
+    else
+      this.updateDetails();   
   }
 
   /******************** CREATE ACTION ********************/
