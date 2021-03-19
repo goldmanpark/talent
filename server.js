@@ -15,14 +15,26 @@ app.get("/home", (req, res) => {
 
 app.get("/history/:ticker", (req, res) => {
   try {
-    var startDate = req.query.startDate;
-    var endDate = req.query.endDate;
-    var symbol = req.query.ticker;
-    fs.readFile('./rawData/history/' + symbol + '.json', 'utf8', (err, histJson) => {
-      if (err)
+    // var startDate = req.query.startDate;
+    // var endDate = req.query.endDate;
+    // var symbol = req.query.ticker;
+    // fs.readFile('./rawData/history/' + symbol + '.json', 'utf8', (err, histJson) => {
+    //   if (err)
+    //     throw err;
+    //   res.json({
+    //     'symbol': symbol,
+    //     'data': jsonHistoryTransfer(JSON.parse(histJson), startDate, endDate)
+    //   });
+    // });
+    let option = {
+      scriptPath: "pymodule",
+      args: ["-u", "-hist", req.query.ticker, req.query.startDate, req.query.endDate]
+    }
+    PythonShell.run("yf_only.py", option, function(err, pyRes){
+      if(err)
         throw err;
       res.json({
-        'symbol': symbol,
+        'symbol': req.query.ticker,
         'data': jsonHistoryTransfer(JSON.parse(histJson), startDate, endDate)
       });
     });
@@ -34,17 +46,17 @@ app.get("/history/:ticker", (req, res) => {
 
 app.get("/statistics/:ticker", (req, res) => {
   try {
-    var startDate = req.query.startDate;
-    var endDate = req.query.endDate;
-    var symbol = req.query.ticker;
-    fs.readFile('./rawData/statistics/' + symbol + '.json', 'utf8', (err, statJson) => {
-      if (err)
-        throw err;
-      res.json({
-        'symbol': symbol,
-        'data': jsonStatisticsTransfer(JSON.parse(statJson), startDate, endDate)
-      });
-    });
+    // var startDate = req.query.startDate;
+    // var endDate = req.query.endDate;
+    // var symbol = req.query.ticker;
+    // fs.readFile('./rawData/statistics/' + symbol + '.json', 'utf8', (err, statJson) => {
+    //   if (err)
+    //     throw err;
+    //   res.json({
+    //     'symbol': symbol,
+    //     'data': jsonStatisticsTransfer(JSON.parse(statJson), startDate, endDate)
+    //   });
+    // });
   } catch (error) {
     console.log(error.name);
     console.log(error.message);
