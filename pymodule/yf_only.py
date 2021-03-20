@@ -58,7 +58,7 @@ elif sys.argv[1] == "-u":
 
     if sys.argv[2] == "-hist":
         ticker = yf.Ticker(sys.argv[3])
-        print(ticker.history(start=sys.argv[4], end=sys.argv[5], interval="1d"))
+        print(ticker.history(start=sys.argv[4], end=sys.argv[5], interval="1d").to_json(orient="table"))
 
     elif sys.argv[2] == "-stat":
         ticker = yf.Ticker(sys.argv[3])
@@ -70,10 +70,8 @@ elif sys.argv[1] == "-u":
         del df["Dividends"]
         del df["Stock Splits"]
         del df["Volume"]
-        print(df)
+        print(df.to_json(orient="table"))
 
 else:
     print("error")
     sys.exit(0)
-
-print("finished!")
