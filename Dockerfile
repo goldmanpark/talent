@@ -1,6 +1,10 @@
-# Use the official lightweight Node.js 12 image.
+# Use the official lightweight Node.js 14 image.
 # https://hub.docker.com/_/node
-FROM node:12-slim
+FROM node:14-slim
+
+# Install Python3 and yfinance module
+RUN apt-get update && apt-get install python-dev python-pip -y
+RUN pip install yfinance
 
 # Create and change to the app directory.
 WORKDIR /usr/src/app
