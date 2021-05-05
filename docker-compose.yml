@@ -1,0 +1,10 @@
+version: "3"
+services:
+
+    nodejs-server:
+        image: "node:14-slim"
+        container_name: nodejs-server
+
+    react-app:
+
+    python-module:
