@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "backend(nodejs)",
+  "author": "Goldman Park",
+  "main": "server.js",
+  "dependencies": {
+    "@google-cloud/firestore": "^4.10.0",
+    "cors": "^2.8.5",
+    "dayjs": "^1.10.4",
+    "express": "^4.17.1",
+    "python-shell": "^2.0.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goldmanpark/talent.git"
+  }
+}
