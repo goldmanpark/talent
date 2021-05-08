@@ -2,10 +2,10 @@ const express = require('express');
 const fs = require('fs');
 const Firestore = require('@google-cloud/firestore');
 const { PythonShell } = require("python-shell");
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 8080;
 
 const app = express();
-const tickers = JSON.parse(fs.readFileSync('./rawData/tickers.json', 'utf8'));
+const tickers = JSON.parse(fs.readFileSync('../rawData/tickers.json', 'utf8'));
 
 app.use(express.json());
 app.listen(port, () => console.log("Backend server lives on " + port));
