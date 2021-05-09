@@ -1,26 +1,16 @@
-# Use the official lightweight Node.js 14 image.
-# https://hub.docker.com/_/node
 FROM node:14-slim
+
+WORKDIR /usr/src/app
 
 # Install Python3 and yfinance module
 RUN apt-get update && apt-get install python-dev python-pip -y
 RUN pip install yfinance
 
-# Create and change to the app directory.
-WORKDIR /usr/src/app
-
-# Copy application dependency manifests to the container image.
-# A wildcard is used to ensure copying both package.json AND package-lock.json (when available).
-# Copying this first prevents re-running npm install on every code change.
 COPY ["package.json", "package-lock.json", "./"]
 
-# Install production dependencies.
-# If you add a package-lock.json, speed your build by switching to 'npm ci'.
-# RUN npm ci --only=production
 RUN npm install --only=production
 
-# Copy local code to the container image.
 COPY . ./
 
-# Run the web service on container startup.
+EXPOSE 8080
 CMD [ "node", "server.js" ]

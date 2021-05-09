@@ -1,10 +1,15 @@
 version: "3"
 services:
-
     nodejs-server:
-        image: "node:14-slim"
-        container_name: nodejs-server
+        container_name: "nodejs-server"
+        build: ./backend
+        ports: 
+            - "8080:8080"
 
     react-app:
-
-    python-module:
+        container_name: "react-app"
+        build: ./frontend
+        ports: 
+            - "8081:8081"
+        links: 
+            - "nodejs-server"
