@@ -92,11 +92,13 @@ export default function CompareCharts(props){
     var dropdowns = [];
     for(var key in props.tickers){
       var item = props.tickers[key];
-      var dropdown = 
-        <NavDropdown key={key} title={key} onSelect={onAddButton}>
-          { item.map(x => { return <NavDropdown.Item key={x.symbol} eventKey={x.symbol}>{x.shortName}</NavDropdown.Item>}) }
-        </NavDropdown>
-      dropdowns.push(dropdown);
+      if(Array.isArray(item)){
+        var dropdown = 
+          <NavDropdown key={key} title={key} onSelect={onAddButton}>
+            { item.map(x => { return <NavDropdown.Item key={x.symbol} eventKey={x.symbol}>{x.shortName}</NavDropdown.Item>}) }
+          </NavDropdown>
+        dropdowns.push(dropdown);
+      }      
     }
     return dropdowns;
   }

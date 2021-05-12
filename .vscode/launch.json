@@ -9,13 +9,13 @@
             "request": "launch",
             "name": "chrome client debugger",
             "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}/src"
+            "webRoot": "${workspaceFolder}/frontend/src"
         },
         {
             "type": "node",
             "request": "launch",
             "name": "chrome server debugger",
-            "program": "${workspaceFolder}/server.js"
+            "program": "${workspaceFolder}/backend/server.js"
         },
         {
             "name": "Python: Current File",
