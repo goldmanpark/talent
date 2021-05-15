@@ -12,7 +12,7 @@ app.use("/history", require("./router/yfDirectRouter"));
 app.use("/statistics", require("./router/yfDirectRouter"));
 app.listen(port, () => console.log("Backend server lives on " + port));
 
-app.get("/home", (req, res) => {
+app.get("/", (req, res) => {
   res.json(tickers);
   console.log(tickers);
 });
