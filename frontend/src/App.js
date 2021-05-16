@@ -14,8 +14,7 @@ export default class App extends React.Component{
   }
 
   componentDidMount(){
-    console.log("App.js starting..");
-    axios.get('/').then(res => {
+    axios.get('/home').then(res => {
       this.setState({tickers : res.data});
     }).catch(error =>{
       console.log(error);

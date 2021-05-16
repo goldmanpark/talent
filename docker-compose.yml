@@ -6,12 +6,16 @@ services:
         build: ./nginx
         ports:
             - "80:80"
+        networks: 
+            - backend
 
     nodejs-server:
         container_name: "nodejs-server"
         build: ./backend
         ports: 
             - "8080:8080"
+        networks: 
+            - backend
 
     react-app:
         container_name: "react-app"
@@ -20,3 +24,9 @@ services:
             - "8081:8081"
         links: 
             - "nodejs-server"
+        networks: 
+            - backend
+
+networks: 
+    backend:
+        driver: bridge

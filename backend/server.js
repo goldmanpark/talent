@@ -16,3 +16,8 @@ app.get("/", (req, res) => {
   res.json(tickers);
   console.log(tickers);
 });
+
+app.get("/home", (req, res) => {
+  res.json(tickers);
+  console.log(tickers);
+});
