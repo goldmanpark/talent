@@ -3,8 +3,9 @@ const router = express.Router();
 
 /****************** yfinance direct router ******************/
 
-router.get("/history/:ticker", (req, res) => {
+router.get("home/history/:ticker", (req, res) => {
   try {
+    console.log("Call from react-app : " + req.query.ticker);
     let option = {
       scriptPath: "pymodule",
       args: ["-u", "-hist", req.query.ticker, req.query.startDate, req.query.endDate]
@@ -23,8 +24,9 @@ router.get("/history/:ticker", (req, res) => {
   }
 });
 
-router.get("/statistics/:ticker", (req, res) => {
+router.get("home/statistics/:ticker", (req, res) => {
   try {
+    console.log("Call from react-app : " + req.query.ticker);
     let option = {
       scriptPath: "pymodule",
       args: ["-u", "-stat", req.query.ticker, req.query.startDate, req.query.endDate]
