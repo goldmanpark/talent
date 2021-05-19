@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const { PythonShell } = require("python-shell");
 
 /****************** yfinance direct router ******************/
 
-router.get("home/history/:ticker", (req, res) => {
+router.get("/history", (req, res) => {
   try {
     console.log("Call from react-app : " + req.query.ticker);
     let option = {
@@ -24,7 +25,7 @@ router.get("home/history/:ticker", (req, res) => {
   }
 });
 
-router.get("home/statistics/:ticker", (req, res) => {
+router.get("/statistics", (req, res) => {
   try {
     console.log("Call from react-app : " + req.query.ticker);
     let option = {

@@ -18,8 +18,8 @@ export default function CompareCharts(props){
   multiOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') };
   syncOption.xaxis.labels.formatter = function(x){ return dayjs(x).format('YY-MM-DD') };
   const maxTickers = 3;
-  const statRoute = "/statistics/";
-  const histRoute = "/history/";
+  const statRoute = "/home/statistics";
+  const histRoute = "/home/history";
 
   useEffect(() => {
     // remove 
@@ -142,7 +142,7 @@ export default function CompareCharts(props){
   const getJsonData = async (_route, _ticker) => {
     if(!_route || !_ticker)
       return null;
-    const res = await axios.get(_route + _ticker, {
+    const res = await axios.get(_route, {
       params : {
         startDate : startDate,
         endDate : endDate,
