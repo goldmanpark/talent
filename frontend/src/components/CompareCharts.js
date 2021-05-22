@@ -148,16 +148,22 @@ export default function CompareCharts(props){
         endDate : endDate,
         ticker : _ticker
       }
+    }).then((res) => {
+      return {
+        symbol : res.data.symbol,
+        name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
+        data : res.data.data
+      };
     }).catch(error => {
       console.log(error.name);
       console.log(error.message);
-    });
-
-    return {
-      symbol : res.data.symbol,
-      name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
-      data : res.data.data
-    };
+      //throw error;
+      return {
+        symbol : null,
+        name : null,
+        data : null
+      };
+    });    
   }
 
   /******************** JSX RENDER ********************/

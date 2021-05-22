@@ -1,19 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { PythonShell } = require("python-shell");
+const {spawn} = require('child_process');
 
 /****************** yfinance direct router ******************/
 
 router.get("/history", (req, res) => {
   try {
     console.log("Call from react-app : " + req.query.ticker);
-    let option = {
-      scriptPath: "pymodule",
-      args: ["-u", "-hist", req.query.ticker, req.query.startDate, req.query.endDate]
-    }
-    PythonShell.run("yf_only.py", option, function(err, pyRes){
-      if(err)
-        throw err;
+    let pyProc = spawn('python', ['pymodule/yf_only.py', "-u", "-hist", req.query.ticker, req.query.startDate, req.query.endDate]);
+    pyProc.stdout.on('data', (pyRes) => {
       res.json({
         'symbol': req.query.ticker,
         'data': getHistoryJsonData(JSON.parse(pyRes))
@@ -28,13 +23,8 @@ router.get("/history", (req, res) => {
 router.get("/statistics", (req, res) => {
   try {
     console.log("Call from react-app : " + req.query.ticker);
-    let option = {
-      scriptPath: "pymodule",
-      args: ["-u", "-stat", req.query.ticker, req.query.startDate, req.query.endDate]
-    }
-    PythonShell.run("yf_only.py", option, function(err, pyRes){
-      if(err)
-        throw err;
+    let pyProc = spawn('python', ['pymodule/yf_only.py', "-u", "-stat", req.query.ticker, req.query.startDate, req.query.endDate]);
+    pyProc.stdout.on('data', (pyRes) => {
       res.json({
         'symbol': req.query.ticker,
         'data': getStatisticsJsonData(JSON.parse(pyRes))
