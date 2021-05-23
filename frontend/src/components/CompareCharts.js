@@ -5,6 +5,12 @@ import Chart from 'react-apexcharts';
 import { Navbar, NavDropdown, Button, ButtonGroup } from 'react-bootstrap';
 import { multiOption, syncOption, emptySeries } from '../chartTemplate/chartOptions.json'
 
+/*
+  basic form
+  selectedTickerList : [{symbol, shortName}]
+  statisticsData : [{symbol, name, data}]
+*/
+
 // using Hook
 export default function CompareCharts(props){
   var today = dayjs();
@@ -21,6 +27,7 @@ export default function CompareCharts(props){
   const statRoute = "/home/statistics";
   const histRoute = "/home/history";
 
+  // When ticker selection changed
   useEffect(() => {
     // remove 
     changeStatData(statisticsData.filter(x => 
@@ -29,18 +36,27 @@ export default function CompareCharts(props){
     changeHistData(historyData.filter(x => 
       selectedTickerList.find(y => y.symbol === x.symbol)
     ));
-
+    
     // add
     selectedTickerList.forEach(async x => {
-      if(!statisticsData.find(y => y.symbol === x.symbol)){
-        changeStatData([...statisticsData, await getJsonData(statRoute, x.symbol)]);
+      try{
+        if(!statisticsData.find(y => y.symbol === x.symbol)){
+          let temp = await getJsonData(statRoute, x.symbol);
+          changeStatData([...statisticsData, temp]);
+        }
+        if(!historyData.find(y => y.symbol === x.symbol)){
+          let temp = await getJsonData(histRoute, x.symbol);
+          changeHistData([...historyData, temp]);
+        }
       }
-      if(!historyData.find(y => y.symbol === x.symbol)){
-        changeHistData([...historyData, await getJsonData(histRoute, x.symbol)]);
+      catch(error){
+        console.log(x.symbol + ' : ' + error.name);
+        console.log(error.message);
       }
-    }); // eslint-disable-next-line
+    });        
   }, [selectedTickerList]);
   
+  // When DateTime range Changed
   useEffect(() => {
     const asyncFunc = async () => {
       let tempStat = [];
@@ -53,7 +69,6 @@ export default function CompareCharts(props){
       changeHistData(tempHist);
     }
     asyncFunc();    
-    // eslint-disable-next-line
   }, [startDate, endDate]);
   
   /******************** EVENT HANDLER ********************/
@@ -120,29 +135,41 @@ export default function CompareCharts(props){
   }
 
   const createMultiChart = () => {
-    if(statisticsData.length === 0)
-      return <Chart options={multiOption} series={emptySeries}/>
-    else     
-      return <Chart options={multiOption} series={statisticsData}/>
+    try{
+      if(statisticsData.length === 0)
+        return <Chart options={multiOption} series={emptySeries}/>
+      else     
+        return <Chart options={multiOption} series={statisticsData}/>
+    }
+    catch(error){
+      console.log(error.name);
+      console.log(error.message);
+    }    
   }
 
   const createSyncChart = () => {
-    if(statisticsData.length === 0)
-      return <Chart options={syncOption} series={emptySeries}/>
-    else{
-      return historyData.map(x => {
-        syncOption.title.text = x.name;
-        return <Chart key={x.symbol} options={syncOption} series={[{data: x.data}]} 
-                type="candlestick" height="230"/>
-      });
-    }      
+    try{
+      if(statisticsData.length === 0)
+        return <Chart options={syncOption} series={emptySeries}/>
+      else{
+        return historyData.map(x => {
+          syncOption.title.text = x.name;
+          return <Chart key={x.symbol} options={syncOption} series={[{data: x.data}]} 
+                  type="candlestick" height="230"/>
+        });
+      }
+    }
+    catch(error){
+      console.log(error.name);
+      console.log(error.message);
+    }
   }
 
   /******************** REST METHOD ********************/
   const getJsonData = async (_route, _ticker) => {
     if(!_route || !_ticker)
       return null;
-    const res = await axios.get(_route, {
+    await axios.get(_route, {
       params : {
         startDate : startDate,
         endDate : endDate,
@@ -157,12 +184,7 @@ export default function CompareCharts(props){
     }).catch(error => {
       console.log(error.name);
       console.log(error.message);
-      //throw error;
-      return {
-        symbol : null,
-        name : null,
-        data : null
-      };
+      throw error;
     });    
   }
 

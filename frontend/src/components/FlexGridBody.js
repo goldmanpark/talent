@@ -48,7 +48,7 @@ export default class FlexGridBody extends React.Component{
   async getJsonData(_ticker, _startDate, _endDate){
     if(!_ticker)
       return;
-    await axios.get('/history/' + _ticker, {
+    await axios.get('/home/history', {
       params : {
         startDate : _startDate,
         endDate : _endDate,
