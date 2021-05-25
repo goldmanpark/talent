@@ -1,38 +1,40 @@
 const express = require("express");
 const router = express.Router();
 const {spawn} = require('child_process');
+//https://stackoverflow.com/questions/43356705/node-js-express-error-handling-middleware-with-router
+// const handleErrorAsync = func => (req, res, next) => {
+//   func(req, res, next).catch((error) => next(error));
+// };
 
 /****************** yfinance direct router ******************/
 
-router.get("/history", (req, res) => {
+router.get("/history", async (req, res) => {
   try {
     console.log("Call from react-app : " + req.query.ticker);
     let pyProc = spawn('python', ['pymodule/yf_only.py', "-u", "-hist", req.query.ticker, req.query.startDate, req.query.endDate]);
-    pyProc.stdout.on('data', (pyRes) => {
+    await pyProc.stdout.on('data', (pyRes) => {
       res.json({
         'symbol': req.query.ticker,
         'data': getHistoryJsonData(JSON.parse(pyRes))
       });
     });
   } catch (error) {
-    console.log(error.name);
-    console.log(error.message);
+    console.log(error.toString());
   }
 });
 
-router.get("/statistics", (req, res) => {
+router.get("/statistics", async (req, res) => {
   try {
     console.log("Call from react-app : " + req.query.ticker);
     let pyProc = spawn('python', ['pymodule/yf_only.py', "-u", "-stat", req.query.ticker, req.query.startDate, req.query.endDate]);
-    pyProc.stdout.on('data', (pyRes) => {
+    await pyProc.stdout.on('data', (pyRes) => {
       res.json({
         'symbol': req.query.ticker,
         'data': getStatisticsJsonData(JSON.parse(pyRes))
       });
     });
   } catch (error) {
-    console.log(error.name);
-    console.log(error.message);
+    console.log(error.toString());
   }
 });
 

@@ -9,9 +9,8 @@ const tickers = JSON.parse(fs.readFileSync('tickers.json', 'utf8'));
 
 app.use(express.json());
 app.use("/home", require("./router/yfDirectRouter"));
-app.use((error, req, res, next) => {
-  return res.status(500).json({ error: error.toString() });
-});
+app.use(errorHandler);
+app.use(clientErrorHandler);
 
 app.get("/home", (req, res) => {
   res.json(tickers);
@@ -24,3 +23,16 @@ app.get("/home", (req, res) => {
 });
 
 app.listen(port, () => console.log("Backend server lives on " + port));
+
+function errorHandler(err, req, res, next) {
+  res.status(500);
+  res.render('error', { error: err });
+}
+
+function clientErrorHandler(err, req, res, next) {
+  if (req.xhr) {
+    res.status(500).send({ error: err.toString() });
+  } else {
+    next(err);
+  }
+}
