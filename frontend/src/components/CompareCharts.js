@@ -8,7 +8,7 @@ import { multiOption, syncOption, emptySeries } from '../chartTemplate/chartOpti
 /*
   basic form
   selectedTickerList : [{symbol, shortName}]
-  statisticsData : [{symbol, name, data}]
+  statisticsData : [{symbol, shorName, data}]
 */
 
 // using Hook
@@ -42,11 +42,13 @@ export default function CompareCharts(props){
       try{
         if(!statisticsData.find(y => y.symbol === x.symbol)){
           let temp = await getJsonData(statRoute, x.symbol);
-          changeStatData([...statisticsData, temp]);
+          if(temp !== null)
+            changeStatData([...statisticsData, temp]);
         }
         if(!historyData.find(y => y.symbol === x.symbol)){
           let temp = await getJsonData(histRoute, x.symbol);
-          changeHistData([...historyData, temp]);
+          if(temp !== null)
+            changeHistData([...historyData, temp]);
         }
       }
       catch(error){
@@ -62,8 +64,12 @@ export default function CompareCharts(props){
       let tempStat = [];
       let tempHist = [];
       for await (let x of selectedTickerList){
-        tempStat.push(await getJsonData(statRoute, x.symbol));
-        tempHist.push(await getJsonData(histRoute, x.symbol));
+        let temp1 = await getJsonData(statRoute, x.symbol);
+        if(temp1 !== null)
+          tempStat.push(temp1);
+        let temp2 = await getJsonData(histRoute, x.symbol);
+        if(temp2 !== null)
+          tempHist.push(temp2);
       }
       changeStatData(tempStat);
       changeHistData(tempHist);
@@ -144,7 +150,7 @@ export default function CompareCharts(props){
     catch(error){
       console.log(error.name);
       console.log(error.message);
-    }    
+    }
   }
 
   const createSyncChart = () => {
@@ -153,7 +159,7 @@ export default function CompareCharts(props){
         return <Chart options={syncOption} series={emptySeries}/>
       else{
         return historyData.map(x => {
-          syncOption.title.text = x.name;
+          syncOption.title.text = x.shortName;
           return <Chart key={x.symbol} options={syncOption} series={[{data: x.data}]} 
                   type="candlestick" height="230"/>
         });
@@ -176,16 +182,17 @@ export default function CompareCharts(props){
         ticker : _ticker
       }
     }).then((res) => {
+      console.log(res.data);
       return {
         symbol : res.data.symbol,
-        name : selectedTickerList.find(x => x.symbol === _ticker).shortName,
+        shortName : selectedTickerList.find(x => x.symbol === _ticker).shortName,
         data : res.data.data
       };
     }).catch(error => {
       console.log(error.name);
       console.log(error.message);
-      throw error;
-    });    
+      return null;
+    });
   }
 
   /******************** JSX RENDER ********************/

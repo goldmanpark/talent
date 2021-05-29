@@ -10,7 +10,7 @@ const {spawn} = require('child_process');
 
 router.get("/history", async (req, res) => {
   try {
-    console.log("Call from react-app : " + req.query.ticker);
+    console.log("History request from react-app : " + req.query.ticker);
     let pyProc = spawn('python', ['pymodule/yf_only.py', "-u", "-hist", req.query.ticker, req.query.startDate, req.query.endDate]);
     await pyProc.stdout.on('data', (pyRes) => {
       res.json({
@@ -25,7 +25,7 @@ router.get("/history", async (req, res) => {
 
 router.get("/statistics", async (req, res) => {
   try {
-    console.log("Call from react-app : " + req.query.ticker);
+    console.log("Statistics request from react-app : " + req.query.ticker);
     let pyProc = spawn('python', ['pymodule/yf_only.py', "-u", "-stat", req.query.ticker, req.query.startDate, req.query.endDate]);
     await pyProc.stdout.on('data', (pyRes) => {
       res.json({

@@ -14,7 +14,7 @@ app.use(clientErrorHandler);
 
 app.get("/home", (req, res) => {
   res.json(tickers);
-  console.log("Initial call from React-app");
+  console.log("Initial request from React-app");
   
   let pyTest = spawn('python', ['pymodule/test.py']);
   pyTest.stdout.on('data', (data) => {
