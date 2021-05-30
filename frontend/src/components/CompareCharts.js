@@ -42,12 +42,12 @@ export default function CompareCharts(props){
       try{
         if(!statisticsData.find(y => y.symbol === x.symbol)){
           let temp = await getJsonData(statRoute, x.symbol);
-          if(temp !== null)
+          if(temp !== null && temp !== undefined)
             changeStatData([...statisticsData, temp]);
         }
         if(!historyData.find(y => y.symbol === x.symbol)){
           let temp = await getJsonData(histRoute, x.symbol);
-          if(temp !== null)
+          if(temp !== null && temp !== undefined)
             changeHistData([...historyData, temp]);
         }
       }
@@ -65,10 +65,10 @@ export default function CompareCharts(props){
       let tempHist = [];
       for await (let x of selectedTickerList){
         let temp1 = await getJsonData(statRoute, x.symbol);
-        if(temp1 !== null)
+        if(temp1 !== null && temp1 !== undefined)
           tempStat.push(temp1);
         let temp2 = await getJsonData(histRoute, x.symbol);
-        if(temp2 !== null)
+        if(temp2 !== null && temp2 !== undefined)
           tempHist.push(temp2);
       }
       changeStatData(tempStat);
@@ -155,7 +155,7 @@ export default function CompareCharts(props){
 
   const createSyncChart = () => {
     try{
-      if(statisticsData.length === 0)
+      if(historyData.length === 0)
         return <Chart options={syncOption} series={emptySeries}/>
       else{
         return historyData.map(x => {
@@ -175,14 +175,13 @@ export default function CompareCharts(props){
   const getJsonData = async (_route, _ticker) => {
     if(!_route || !_ticker)
       return null;
-    await axios.get(_route, {
+    return await axios.get(_route, {
       params : {
         startDate : startDate,
         endDate : endDate,
         ticker : _ticker
       }
     }).then((res) => {
-      console.log(res.data);
       return {
         symbol : res.data.symbol,
         shortName : selectedTickerList.find(x => x.symbol === _ticker).shortName,

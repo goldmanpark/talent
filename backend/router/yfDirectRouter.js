@@ -1,10 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const {spawn} = require('child_process');
-//https://stackoverflow.com/questions/43356705/node-js-express-error-handling-middleware-with-router
-// const handleErrorAsync = func => (req, res, next) => {
-//   func(req, res, next).catch((error) => next(error));
-// };
 
 /****************** yfinance direct router ******************/
 

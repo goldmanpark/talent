@@ -40,7 +40,7 @@ export default class FlexGridBody extends React.Component{
   updateDetails(){
     setTimeout(() => {
       this.setState({details : []}, () => {
-        this.props.tickers.forEach(x => this.getJsonData(x.symbol, this.state.startDate, this.state.endDate));
+        this.props.tickers.forEach(async x => await this.getJsonData(x.symbol, this.state.startDate, this.state.endDate));
       });
     }, 200);
   }
@@ -54,7 +54,7 @@ export default class FlexGridBody extends React.Component{
         endDate : _endDate,
         ticker : _ticker
       }
-    }).then(res => {
+    }).then((res) => {
       res.data.shortName = this.props.tickers.find(x => x.symbol === _ticker).shortName
       this.setState({details : [...this.state.details, res.data]});  
     }).catch(error => {
