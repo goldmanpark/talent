@@ -1,6 +1,5 @@
 const express = require('express');
 const fs = require('fs');
-const Firestore = require('@google-cloud/firestore');
 const {spawn} = require('child_process');
 const port = process.env.PORT || 8080;
 
