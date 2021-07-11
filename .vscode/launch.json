@@ -15,7 +15,11 @@
             "type": "node",
             "request": "launch",
             "name": "chrome server debugger",
-            "program": "${workspaceFolder}/backend/server.js"
+            "program": "${workspaceFolder}/backend/server.js",
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/**",
+                "!**/node_modules/**"
+            ]
         },
         {
             "name": "Python: Current File",

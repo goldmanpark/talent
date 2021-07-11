@@ -1,10 +1,18 @@
 const express = require('express');
-const fs = require('fs');
+const Firestore = require('@google-cloud/firestore');
 const {spawn} = require('child_process');
 const port = process.env.PORT || 8080;
 
 const app = express();
-const tickers = JSON.parse(fs.readFileSync('tickers.json', 'utf8'));
+
+const db = new Firestore({
+  projectId: 'talent-309713',
+  keyFilename: 'talent-309713-7edc75ac40df.json',
+});
+const tickers = await db.collection('yfTicker').get();
+tickers.forEach((doc) => {
+  console.log(doc.id, '=>', doc.data());
+});
 
 app.use(express.json());
 app.use("/home", require("./router/yfDirectRouter"));
